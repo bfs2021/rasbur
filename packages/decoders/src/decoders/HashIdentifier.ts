@@ -49,6 +49,6 @@ export class HashIdentifier extends Decoder {
     }
 
     explain(): string {
-        return 'Identified cryptographic hash by length — CRC32 (8), MD5 (32), SHA-1 (40), SHA-224 (56), SHA-256 (64), SHA-384 (96), SHA-512 (128 hex chars).';
+        return 'Identified a cryptographic hash by length: CRC32 (8), MD5 (32), SHA-1 (40), SHA-224 (56), SHA-256 (64), SHA-384 (96), SHA-512 (128 hex chars).';
     }
 }

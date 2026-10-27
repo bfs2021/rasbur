@@ -23,7 +23,7 @@ export class DecodePipeline {
         let currentInput = input;
         const maxDepth = options.maxDepth ?? this.maxDepth;
         const deadline = Date.now() + TIME_BUDGET_MS;
-        // Outputs already visited — prevents A -> B -> A decode cycles
+        // Outputs already visited, which prevents A -> B -> A decode cycles
         const seen = new Set<string>([input]);
 
         while (steps.length < maxDepth && Date.now() < deadline) {
@@ -59,7 +59,7 @@ export class DecodePipeline {
     }
 
     // The user explicitly chose this decoder, so the output-quality gate is
-    // skipped — show them exactly what their decoder produces.
+    // skipped. Show them exactly what their decoder produces.
     private runForcedDecoder(input: string, name: string): StepCandidate | null {
         const decoder = decodeRegistry.getByName(name);
         if (!decoder) return null;
@@ -71,7 +71,7 @@ export class DecodePipeline {
     }
 
     // Trial-decode every claiming decoder and pick the best by
-    // inputShape * outputQuality — a decoder that LOOKS right but produces
+    // inputShape * outputQuality, so a decoder that LOOKS right but produces
     // garbage loses to one that produces real text.
     private findBestCandidate(input: string, seen: Set<string>): StepCandidate | null {
         const candidates = decodeRegistry

@@ -44,7 +44,7 @@ export class CaesarCipherDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded Caesar Cipher — tried all 25 possible shifts and scored each against English letter frequency to find the best match.';
+        return 'Decoded Caesar Cipher by trying all 25 possible shifts and scoring each against English letter frequency to find the best match.';
     }
 
     // Shared gatekeeper for confidence() and decode() so they always agree.
@@ -66,7 +66,7 @@ export class CaesarCipherDecoder extends Decoder {
         if (best.chi > MAX_CHI) return null;
         if (rareLetterRatio(best.text) > MAX_RARE_RATIO) return null;
         if (englishLikeness(best.text) < 0.7) return null;
-        // Real words have real letter pairs — rotated soup does not
+        // Real words have real letter pairs, rotated soup does not
         if (bigramCommonRatio(best.text) < 0.25) return null;
 
         return best;

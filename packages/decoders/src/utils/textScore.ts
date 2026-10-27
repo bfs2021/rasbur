@@ -131,7 +131,7 @@ function asciiRatio(text: string): number {
 }
 
 // Share of a string's letters that belong to the high-frequency English set.
-// English prose sits around 0.7–0.8; uniform random letters around 0.4.
+// English prose sits around 0.7 to 0.8; uniform random letters around 0.4.
 export function commonLetterRatio(text: string): number {
     const letters = text.toLowerCase().replace(/[^a-z]/g, '');
     if (letters.length === 0) return 0;
@@ -144,7 +144,7 @@ export function commonLetterRatio(text: string): number {
 }
 
 // Share of within-word letter pairs that are common English bigrams.
-// English prose scores ~0.45–0.7; rotated gibberish ~0.05–0.2.
+// English prose scores ~0.45 to 0.7; rotated gibberish ~0.05 to 0.2.
 export function bigramCommonRatio(text: string): number {
     const words = text.toLowerCase().match(/[a-z]+/g) || [];
 
@@ -172,7 +172,7 @@ export function rareLetterRatio(text: string): number {
 
 export function englishLikeness(text: string): number {
     const letters = text.toLowerCase().replace(/[^a-z]/g, '');
-    // Too few letters to judge — stay neutral so digits/JSON aren't punished
+    // Too few letters to judge, so stay neutral and digits/JSON aren't punished
     if (letters.length < 4) return 0.5;
 
     return Math.max(0, Math.min(1, (commonLetterRatio(text) - 0.25) / 0.5));
@@ -180,7 +180,7 @@ export function englishLikeness(text: string): number {
 
 // 0..1 score for "does this look like real decoded data?"
 // Control/replacement chars are a hard gate; ASCII share and English-letter
-// distribution are soft signals. Non-English unicode prose scores low — an
+// distribution are soft signals. Non-English unicode prose scores low, an
 // accepted tradeoff, since decode targets here are overwhelmingly ASCII.
 export function plaintextScore(text: string): number {
     if (!text) return 0;

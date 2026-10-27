@@ -74,6 +74,6 @@ export class HtmlEntityDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded HTML entities — converts named (&amp;), decimal (&#65;), and hexadecimal (&#x41;) entities to their character equivalents.';
+        return 'Decoded HTML entities, converting named (&amp;), decimal (&#65;), and hexadecimal (&#x41;) forms to their character equivalents.';
     }
 }

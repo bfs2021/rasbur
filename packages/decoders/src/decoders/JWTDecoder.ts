@@ -43,6 +43,6 @@ export class JWTDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded JWT (JSON Web Token) — split into header, payload (claims), and signature. Shows the JSON structure of header and payload.';
+        return 'Decoded JWT (JSON Web Token), split into header, payload (claims), and signature. Shows the JSON structure of header and payload.';
     }
 }

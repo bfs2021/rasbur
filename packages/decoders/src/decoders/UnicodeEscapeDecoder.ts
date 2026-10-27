@@ -47,6 +47,6 @@ export class UnicodeEscapeDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded Unicode escape sequences — handles \\u0048 (4 hex), \\x48 (2 hex), and \\U00000048 (8 hex) formats to their character equivalents.';
+        return 'Decoded Unicode escape sequences, handling \\u0048 (4 hex), \\x48 (2 hex), and \\U00000048 (8 hex) formats.';
     }
 }

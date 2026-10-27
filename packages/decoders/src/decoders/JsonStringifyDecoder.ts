@@ -35,6 +35,6 @@ export class JsonStringifyDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded JSON.stringify escaped sequences — converts \\n, \\t, \\", \\\\, etc. to their actual character representations.';
+        return 'Decoded JSON.stringify escaped sequences, converting \\n, \\t, \\", \\\\, and similar to their actual character representations.';
     }
 }

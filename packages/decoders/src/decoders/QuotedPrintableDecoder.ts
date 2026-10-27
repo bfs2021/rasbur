@@ -60,6 +60,6 @@ export class QuotedPrintableDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded Quoted-Printable encoding — converts =XX hex escape sequences (common in email/MIME) to their character equivalents.';
+        return 'Decoded Quoted-Printable encoding, which converts =XX hex escape sequences (common in email/MIME) to their character equivalents.';
     }
 }

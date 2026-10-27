@@ -41,7 +41,7 @@ export class PunycodeDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from Punycode — converts internationalized domain names (IDN) with xn-- prefix to their Unicode representation.';
+        return 'Decoded from Punycode, which converts internationalized domain names (IDN) with an xn-- prefix to their Unicode representation.';
     }
 
     private decodeLabel(encoded: string): string {
@@ -75,11 +75,11 @@ export class PunycodeDecoder extends Decoder {
                 let digit: number;
 
                 if (code >= 97 && code <= 122) {
-                    digit = code - 97;          // a-z → 0-25
+                    digit = code - 97; // a-z → 0-25
                 } else if (code >= 65 && code <= 90) {
-                    digit = code - 65;          // A-Z → 0-25
+                    digit = code - 65; // A-Z → 0-25
                 } else if (code >= 48 && code <= 57) {
-                    digit = code - 48 + 26;     // 0-9 → 26-35
+                    digit = code - 48 + 26; // 0-9 → 26-35
                 } else {
                     return encoded;
                 }
@@ -88,7 +88,7 @@ export class PunycodeDecoder extends Decoder {
 
                 const t = Math.max(TMIN, Math.min(TMAX, k - bias));
                 if (digit < t) break;
-                w *= (BASE - t);
+                w *= BASE - t;
             }
 
             const len = output.length + 1;

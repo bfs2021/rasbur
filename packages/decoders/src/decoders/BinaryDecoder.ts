@@ -41,6 +41,6 @@ export class BinaryDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from binary encoding — each group of 8 bits (0s and 1s) represents one ASCII character.';
+        return 'Decoded from binary encoding, where each group of 8 bits (0s and 1s) represents one ASCII character.';
     }
 }

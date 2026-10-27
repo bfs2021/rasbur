@@ -57,6 +57,6 @@ export class Base32Decoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from Base32 encoding (RFC 4648) — a scheme that represents binary data using 32 characters (A-Z, 2-7) with = padding.';
+        return 'Decoded from Base32 encoding (RFC 4648), a scheme that represents binary data using 32 characters (A-Z, 2-7) with = padding.';
     }
 }

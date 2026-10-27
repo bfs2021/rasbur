@@ -43,6 +43,6 @@ export class AsciiDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from ASCII decimal codes — each number represents a character in the ASCII table (e.g., 72 = H, 101 = e).';
+        return 'Decoded from ASCII decimal codes, where each number represents a character in the ASCII table (e.g., 72 = H, 101 = e).';
     }
 }

@@ -18,7 +18,7 @@ export class Base64Decoder extends Decoder {
         if (cleanInput.endsWith('=')) return 0.9;
 
         // Short unpadded strings ("test", "cool") are usually plain words,
-        // not Base64 — claim them only weakly and let output quality decide.
+        // not Base64. Claim them only weakly and let output quality decide.
         if (cleanInput.length < 8) return 0.4;
 
         return 0.8;
@@ -38,6 +38,6 @@ export class Base64Decoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from Base64 encoding — a scheme that represents binary data using 64 ASCII characters (A-Z, a-z, 0-9, +, /) with = padding.';
+        return 'Decoded from Base64 encoding, a scheme that represents binary data using 64 ASCII characters (A-Z, a-z, 0-9, +, /) with = padding.';
     }
 }

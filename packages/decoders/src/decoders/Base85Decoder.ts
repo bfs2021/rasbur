@@ -117,6 +117,6 @@ export class Base85Decoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from Ascii85 (Base85) encoding — used in Adobe PostScript and PDF files. Each group of 5 characters represents 4 bytes of data.';
+        return 'Decoded from Ascii85 (Base85) encoding, used in Adobe PostScript and PDF files. Each group of 5 characters represents 4 bytes of data.';
     }
 }

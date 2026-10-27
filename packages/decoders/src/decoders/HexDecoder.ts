@@ -3,8 +3,8 @@ import { Decoder } from '../base/Decoder.js';
 export class HexDecoder extends Decoder {
     readonly name = 'Hex';
 
-    // Strip "0x" only at the start of the string or of a separated token —
-    // the old global replace corrupted data like "ab0xcd".
+    // Strip "0x" only at the start of the string or of a separated token.
+    // The old global replace corrupted data like "ab0xcd".
     private clean(input: string): string {
         return input.replace(/(^|[\s:,-])0x/gi, '$1').replace(/[\s:\-,]/g, '');
     }
@@ -45,6 +45,6 @@ export class HexDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from hexadecimal encoding — each pair of hex digits (0-9, A-F) represents one byte of data.';
+        return 'Decoded from hexadecimal encoding, where each pair of hex digits (0-9, A-F) represents one byte of data.';
     }
 }

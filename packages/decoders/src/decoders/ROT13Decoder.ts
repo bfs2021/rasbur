@@ -67,7 +67,7 @@ export class ROT13Decoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from ROT13 — a simple letter substitution cipher that shifts each letter 13 positions in the alphabet.';
+        return 'Decoded from ROT13, a simple letter substitution cipher that shifts each letter 13 positions in the alphabet.';
     }
 
     private rot13(input: string): string {

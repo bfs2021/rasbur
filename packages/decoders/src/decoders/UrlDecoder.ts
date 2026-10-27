@@ -32,6 +32,6 @@ export class UrlDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from URL encoding (percent-encoding) — a mechanism that replaces unsafe characters with %HH hex values for use in URIs.';
+        return 'Decoded from URL encoding (percent-encoding), a mechanism that replaces unsafe characters with %HH hex values for use in URIs.';
     }
 }

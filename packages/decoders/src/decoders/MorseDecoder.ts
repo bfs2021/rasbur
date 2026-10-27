@@ -102,6 +102,6 @@ export class MorseDecoder extends Decoder {
     }
 
     explain(): string {
-        return 'Decoded from Morse code — a system representing letters and numbers as sequences of dots (.) and dashes (-), with spaces between letters and / between words.';
+        return 'Decoded from Morse code, a system representing letters and numbers as sequences of dots (.) and dashes (-), with spaces between letters and / between words.';
     }
 }

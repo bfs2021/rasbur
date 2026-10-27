@@ -58,6 +58,6 @@ export class Base58Decoder extends Decoder {
         }
     }
     explain(): string {
-        return 'Decoded from Base58 encoding — used in Bitcoin/IPFS addresses. Uses 58 characters (excludes 0, O, I, l to avoid confusion).';
+        return 'Decoded from Base58 encoding, used in Bitcoin/IPFS addresses. Uses 58 characters, excluding 0, O, I and l to avoid confusion.';
     }
 }

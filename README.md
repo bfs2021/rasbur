@@ -7,16 +7,14 @@ that only looks valid. Every step is returned with a confidence score.
 
 Rasbur is free and open source under the MIT license.
 
-
-
 ## Features
 
 The decoding engine:
 
 - Auto-detection pipeline. Paste a payload and Rasbur identifies the encoding, decodes
-it, and unwraps stacked layers one at a time.
+  it, and unwraps stacked layers one at a time.
 - Output-aware confidence. Each decoder is scored on both its input shape and the
-quality of the decoded output (English letter frequency, byte patterns, structure).
+  quality of the decoded output (English letter frequency, byte patterns, structure).
 - Extensible. Register your own decoder without forking the engine.
 
 The web app adds:
@@ -26,12 +24,10 @@ The web app adds:
 - REST API. Call the same pipeline from your own code, authenticated with scoped keys.
 - API keys and rate limits. Issue scoped keys and track usage per key.
 - Shareable results. Turn any decode into an expiring public link that includes the
-full pipeline.
+  full pipeline.
 - Side-by-side compare. Decode two payloads and view a character-level diff of the output.
 - History. Signed-in users can save and revisit past decodes.
 - Accounts. Sign in with Google or GitHub.
-
-
 
 ## Supported decoders
 
@@ -50,7 +46,6 @@ Turborepo.
 rasbur/
 ├── apps/
 │   ├── api/                Express backend (REST and WebSocket)
-│   ├── cli/                Scaffold only, not yet implemented
 │   └── web/                React and Vite frontend
 ├── packages/
 │   ├── decoders/           Core decoding engine and pipeline
@@ -58,8 +53,6 @@ rasbur/
 │   ├── eslint-config/
 │   └── typescript-config/
 ```
-
-
 
 ## API
 
@@ -102,16 +95,12 @@ Response:
 }
 ```
 
-
-
 ### Other endpoints
 
 - `POST /api/identify` ranks likely encodings without decoding.
 - `POST /api/decode/batch` decodes multiple strings in one request.
 - `GET /api/decoders` lists all registered decoders with descriptions.
 - `GET /health` returns server health status.
-
-
 
 ## Getting started
 
@@ -128,18 +117,12 @@ npm run build    # build all apps and packages
 npm run test     # run the test suites
 ```
 
-
-
 ## Roadmap
 
 The following are planned and not yet built:
 
-- npm package. Publish the decoding engine as a standalone package.
 - MCP server. Expose the engine as tools an AI agent can call locally.
 - File upload decoding. Decode the contents of uploaded files.
-- CLI. Decode from the terminal.
-
-
 
 ## License
 

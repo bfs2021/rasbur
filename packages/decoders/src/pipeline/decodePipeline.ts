@@ -101,12 +101,23 @@ export class DecodePipeline {
     identify(input: string): IdentifyResult {
         const matches = decodeRegistry
             .getAll()
-            .map((decoder) => ({
-                name: decoder.name,
-                confidence: decoder.confidence(input),
-                description: decoder.explain(),
-            }))
-            .filter((decoder) => decoder.confidence > 0)
+            .map((decoder) => {
+                const shape = decoder.confidence(input);
+                if (shape === 0) return null;
+
+                const output = decoder.decode(input);
+                if (!output || output === input) return null;
+
+                const quality = plaintextScore(output);
+                if (quality < QUALITY_GATE) return null;
+
+                return {
+                    name: decoder.name,
+                    confidence: Math.round(shape * quality * 100) / 100,
+                    description: decoder.explain(),
+                };
+            })
+            .filter((decoder): decoder is NonNullable<typeof decoder> => decoder !== null)
             .sort((a, b) => b.confidence - a.confidence);
         return {
             input,

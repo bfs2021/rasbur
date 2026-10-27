@@ -23,9 +23,15 @@ describe('Base64Decoder', () => {
         expect(d.confidence('SGVsbG8gV29ybGQ=')).toBeGreaterThanOrEqual(0.9);
     });
 
+    it('decodes unpadded Base64url input', () => {
+        expect(d.confidence('eyJzdWIiOiIxMjM0NTY3ODkwIn0')).toBeGreaterThan(0);
+        expect(d.decode('eyJzdWIiOiIxMjM0NTY3ODkwIn0')).toBe('{"sub":"1234567890"}');
+    });
+
     it('returns 0 confidence for empty or non-Base64 input', () => {
         expect(d.confidence('')).toBe(0);
         expect(d.confidence('abc')).toBe(0); // length not divisible by 4
+        expect(d.confidence('abcde')).toBe(0); // impossible Base64 length
     });
 });
 
@@ -139,6 +145,17 @@ describe('DecodePipeline', () => {
         expect(result.matches[0]!.confidence).toBeGreaterThanOrEqual(
             result.matches[result.matches.length - 1]!.confidence
         );
+    });
+
+    it('does not identify Base64-shaped garbage as a confident match', () => {
+        const result = decodePipeline.identify('AKIAIOSFODNN7EXAMPLE');
+        expect(result.matches).toEqual([]);
+    });
+
+    it('does not decode Base64-shaped garbage', () => {
+        const result = decodePipeline.decode('AKIAIOSFODNN7EXAMPLE');
+        expect(result.steps).toEqual([]);
+        expect(result.finalOutput).toBe('AKIAIOSFODNN7EXAMPLE');
     });
 });
 

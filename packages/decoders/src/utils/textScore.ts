@@ -188,5 +188,11 @@ export function plaintextScore(text: string): number {
     const printable = printableRatio(text);
     if (printable < 0.85) return printable * 0.1;
 
-    return 0.55 * asciiRatio(text) + 0.45 * englishLikeness(text);
+    // Decoding random bytes as UTF-8 yields mostly Latin-1 symbols, which carry no
+    // control characters and so clear the gate above. A low ASCII share is the real
+    // tell for that mojibake, so gate on it too.
+    const ascii = asciiRatio(text);
+    if (ascii < 0.6) return ascii * 0.1;
+
+    return 0.55 * ascii + 0.45 * englishLikeness(text);
 }

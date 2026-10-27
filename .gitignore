@@ -49,9 +49,3 @@ pnpm-debug.log*
 
 # Cache
 .eslintcache
-
-# Docs
-PRD.md
-learnings.txt
-ARCHITECTURE.md
-plan.md

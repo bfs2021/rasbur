@@ -1,5 +1,5 @@
 import { Decoder } from '../base/Decoder.js';
-import { DecodeResult, DecodeStep, DecodeOptions, IdentifyResult } from '@rasbur/shared';
+import type { DecodeResult, DecodeStep, DecodeOptions, IdentifyResult } from '../types.js';
 import { decodeRegistry } from '../registry/decodeRegistry.js';
 import { plaintextScore } from '../utils/textScore.js';
 

@@ -1,4 +1,5 @@
 export * from './base/Decoder.js';
+export * from './types.js';
 export * from './registry/decodeRegistry.js';
 export * from './pipeline/decodePipeline.js';
 export * from './utils/textScore.js';

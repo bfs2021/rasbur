@@ -11,9 +11,6 @@
         "build": "tsc",
         "test": "vitest run"
     },
-    "dependencies": {
-        "@rasbur/shared": "*"
-    },
     "devDependencies": {
         "@types/node": "^20.0.0",
         "vitest": "^3.2.6"

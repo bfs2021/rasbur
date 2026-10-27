@@ -1,6 +1,34 @@
 {
     "name": "@rasbur/decoders",
     "version": "0.1.0",
+    "description": "Auto-detecting multi-layer string decoder. Identifies the encoding, unwraps stacked layers, and scores decoded output quality.",
+    "license": "MIT",
+    "author": "Omansh Choudhary",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/omanshchoudhary/rasbur.git",
+        "directory": "packages/decoders"
+    },
+    "homepage": "https://github.com/omanshchoudhary/rasbur/tree/main/packages/decoders#readme",
+    "bugs": {
+        "url": "https://github.com/omanshchoudhary/rasbur/issues"
+    },
+    "keywords": [
+        "decode",
+        "base64",
+        "base64url",
+        "hex",
+        "jwt",
+        "morse",
+        "cipher",
+        "encoding",
+        "detect",
+        "auto-detect",
+        "ctf"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -9,7 +37,8 @@
     ],
     "scripts": {
         "build": "tsc",
-        "test": "vitest run"
+        "test": "vitest run",
+        "prepublishOnly": "npm run build"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",

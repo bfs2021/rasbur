@@ -1,44 +1,82 @@
-# Rasbur
+```
+                             __
+   _____   ____ _    _____  / /_    __  __    _____
+  / ___/  / __ `/   / ___/ / __ \  / / / /   / ___/
+ / /     / /_/ /   (__  ) / /_/ / / /_/ /   / /
+/_/      \__,_/   /____/  \_.___/ \__,_/   /_/
+```
 
-Rasbur detects and decodes encoded strings such as Base64, hex, JWT, Morse, and
-ciphers, including multi-layer combinations. The auto-detection pipeline scores both
-the input format and the decoded output, so it can tell a correct decode from output
-that only looks valid. Every step is returned with a confidence score.
+Rasbur identifies what an encoded string is, decodes it, and keeps unwrapping stacked
+layers until nothing is left. You do not tell it the format.
 
-Rasbur is free and open source under the MIT license.
+Every decoder is scored twice: once on whether the input looks like its format, and again
+on whether the decoded output looks like real data. That second score is what separates a
+correct decode from one that merely looks valid, and it is why Rasbur returns nothing
+instead of guessing when it cannot tell.
 
-## Features
+Free and open source under the MIT license.
 
-The decoding engine:
+## Packages
 
-- Auto-detection pipeline. Paste a payload and Rasbur identifies the encoding, decodes
-  it, and unwraps stacked layers one at a time.
-- Output-aware confidence. Each decoder is scored on both its input shape and the
-  quality of the decoded output (English letter frequency, byte patterns, structure).
-- Extensible. Register your own decoder without forking the engine.
+| Package                                                              | Version | Description                                   |
+| -------------------------------------------------------------------- | ------- | --------------------------------------------- |
+| [`@rasbur/decoders`](https://www.npmjs.com/package/@rasbur/decoders) | 0.1.1   | The decoding engine. No dependencies.         |
+| [`@rasbur/mcp`](https://www.npmjs.com/package/@rasbur/mcp)           | 0.1.0   | MCP server giving an AI agent a real decoder. |
 
-The web app adds:
+### Use it in code
 
-- Live decoding. Results stream over a WebSocket as you type, with a REST fallback.
-- Web workspace. Decode, inspect each step, and copy or reuse the result.
-- REST API. Call the same pipeline from your own code, authenticated with scoped keys.
-- API keys and rate limits. Issue scoped keys and track usage per key.
-- Shareable results. Turn any decode into an expiring public link that includes the
-  full pipeline.
-- Side-by-side compare. Decode two payloads and view a character-level diff of the output.
-- History. Signed-in users can save and revisit past decodes.
-- Accounts. Sign in with Google or GitHub.
+```bash
+npm install @rasbur/decoders
+```
 
-## Supported decoders
+```ts
+import { decodePipeline, registerDecoders } from '@rasbur/decoders';
 
-Base64, Base32, Base58, Base85, Hex, Binary, URL, ASCII, Morse Code, ROT13, Caesar
-Cipher, JWT, Unicode Escape, HTML Entity, Punycode, Quoted-Printable, JSON Stringify,
-and Hash Identifier (MD5, SHA-1, SHA-256, SHA-512, and more).
+registerDecoders();
 
-## Tech stack
+decodePipeline.decode('NDg2NTZjNmM2ZjIwNTc2ZjcyNmM2NA==');
+// Base64 -> 48656c6c6f20576f726c64 -> Hex -> "Hello World"
+```
 
-TypeScript, React 19, Vite, Tailwind CSS, Express, Socket.IO, MongoDB, Redis, Zod, and
-Turborepo.
+Full API, options and the recipe for registering your own decoder are in the
+[package readme](packages/decoders#readme).
+
+### Give it to an AI agent
+
+Models decode short base64 reasonably well, then quietly corrupt long strings, lose track
+across stacked layers, and almost never admit uncertainty. The MCP server hands them the
+real thing.
+
+```json
+{
+    "mcpServers": {
+        "rasbur": {
+            "command": "npx",
+            "args": ["-y", "@rasbur/mcp"]
+        }
+    }
+}
+```
+
+Works with any MCP client that supports stdio servers. Three tools: `decode`, `identify`
+and `list_decoders`. Runs locally, no API key, no network calls. See the
+[package readme](packages/mcp#readme).
+
+## Supported encodings
+
+Base64 (including base64url), Base32, Base58, Base85, Hex, Binary, URL, ASCII, Morse
+Code, ROT13, Caesar Cipher, JWT, Unicode Escape, HTML Entity, Punycode,
+Quoted-Printable, JSON Stringify, and hash identification for MD5, SHA-1, SHA-256,
+SHA-512 and others.
+
+## Web app
+
+A full-stack reference implementation lives in this repo and is **not currently
+deployed**. It wraps the same engine in a workspace with live decoding over a WebSocket,
+step-by-step pipeline inspection, saved history, expiring share links, a character-level
+compare tool, Google and GitHub sign-in, and scoped API keys with per-key rate limiting.
+
+It runs locally with `npm run dev`. New work goes into the packages.
 
 ## Project structure
 
@@ -48,61 +86,14 @@ rasbur/
 │   ├── api/                Express backend (REST and WebSocket)
 │   └── web/                React and Vite frontend
 ├── packages/
-│   ├── decoders/           Core decoding engine and pipeline
+│   ├── decoders/           Core decoding engine, published to npm
+│   ├── mcp/                MCP server, published to npm
 │   ├── shared/             Shared types and Zod schemas
 │   ├── eslint-config/
 │   └── typescript-config/
 ```
 
-## API
-
-Decoding works without an account, subject to a daily rate limit. Authenticate with a
-Bearer token from a web session or an `X-API-Key` header to raise the limit and to reach
-the endpoints that require an account, such as batch decoding. A full interactive
-reference is available at `/docs`.
-
-### POST /api/decode
-
-Decodes an input string through the auto-detection pipeline.
-
-Body:
-
-```json
-{
-    "input": "SGVsbG8gV29ybGQ=",
-    "options": {
-        "maxDepth": 5,
-        "strictMode": false
-    }
-}
-```
-
-Response:
-
-```json
-{
-    "originalInput": "SGVsbG8gV29ybGQ=",
-    "steps": [
-        {
-            "decoderName": "Base64",
-            "confidence": 0.9,
-            "input": "SGVsbG8gV29ybGQ=",
-            "output": "Hello World",
-            "explanation": "..."
-        }
-    ],
-    "finalOutput": "Hello World"
-}
-```
-
-### Other endpoints
-
-- `POST /api/identify` ranks likely encodings without decoding.
-- `POST /api/decode/batch` decodes multiple strings in one request.
-- `GET /api/decoders` lists all registered decoders with descriptions.
-- `GET /health` returns server health status.
-
-## Getting started
+## Running locally
 
 ```bash
 npm install
@@ -110,19 +101,38 @@ cp apps/api/.env.example apps/api/.env   # fill in the required values
 npm run dev
 ```
 
-Other scripts:
-
 ```bash
 npm run build    # build all apps and packages
 npm run test     # run the test suites
 ```
 
-## Roadmap
+The packages need no setup. Only the web app and API require the environment file.
 
-The following are planned and not yet built:
+## HTTP API
 
-- MCP server. Expose the engine as tools an AI agent can call locally.
-- File upload decoding. Decode the contents of uploaded files.
+Served by `apps/api` for the web app. Decoding works without an account under a daily
+rate limit. Authenticate with a Bearer token or an `X-API-Key` header to raise it and to
+reach endpoints that require an account. Interactive reference at `/docs`.
+
+| Method          | Endpoint            | Auth     |
+| --------------- | ------------------- | -------- |
+| POST            | `/api/decode`       | Optional |
+| POST            | `/api/identify`     | Optional |
+| POST            | `/api/decode/batch` | Required |
+| POST            | `/api/compare`      | Required |
+| GET             | `/api/decoders`     | Public   |
+| GET/POST/DELETE | `/api/history`      | Required |
+| POST            | `/api/share`        | Required |
+| GET             | `/api/share/:slug`  | Public   |
+| POST            | `/api/keys`         | Required |
+| GET/PATCH       | `/api/me`           | Required |
+
+If you only need decoding in your own code, use `@rasbur/decoders` rather than this API.
+
+## Tech stack
+
+TypeScript, Turborepo, React 19, Vite, Tailwind CSS, Express, Socket.IO, MongoDB, Redis,
+Zod, Vitest and Playwright.
 
 ## License
 

@@ -1,0 +1,49 @@
+{
+    "name": "@rasbur/mcp",
+    "version": "0.1.0",
+    "description": "MCP server that gives AI agents a decode tool. Identifies encodings, unwraps stacked layers, and says when it isn't sure.",
+    "license": "MIT",
+    "author": "Omansh Choudhary",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/omanshchoudhary/rasbur.git",
+        "directory": "packages/mcp"
+    },
+    "homepage": "https://github.com/omanshchoudhary/rasbur/tree/main/packages/mcp#readme",
+    "bugs": {
+        "url": "https://github.com/omanshchoudhary/rasbur/issues"
+    },
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "decode",
+        "base64",
+        "jwt",
+        "hex",
+        "agent",
+        "ai",
+        "claude"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "type": "module",
+    "bin": {
+        "rasbur-mcp": "./dist/index.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepublishOnly": "npm run build"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/server": "^2.0.0",
+        "@rasbur/decoders": "^0.1.0",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0"
+    }
+}

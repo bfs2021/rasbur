@@ -157,6 +157,24 @@ describe('DecodePipeline', () => {
         expect(result.steps).toEqual([]);
         expect(result.finalOutput).toBe('AKIAIOSFODNN7EXAMPLE');
     });
+
+    it.each(['just some words', 'The quick brown fox', 'hello world'])(
+        'leaves plain English untouched: %s',
+        (text) => {
+            expect(decodePipeline.decode(text).steps).toEqual([]);
+            expect(decodePipeline.identify(text).matches).toEqual([]);
+        }
+    );
+});
+
+describe('plaintextScore control characters', () => {
+    it('rejects output containing a control character', () => {
+        expect(plaintextScore('hello\u0010world')).toBe(0);
+    });
+
+    it('still accepts tabs and newlines', () => {
+        expect(plaintextScore('line one\nline two\ttabbed')).toBeGreaterThan(0.5);
+    });
 });
 
 describe('plaintextScore', () => {

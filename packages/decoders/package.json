@@ -1,6 +1,6 @@
 {
     "name": "@rasbur/decoders",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Auto-detecting multi-layer string decoder. Identifies the encoding, unwraps stacked layers, and scores decoded output quality.",
     "license": "MIT",
     "author": "Omansh Choudhary",

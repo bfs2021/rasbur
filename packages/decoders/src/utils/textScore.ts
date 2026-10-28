@@ -185,8 +185,9 @@ export function englishLikeness(text: string): number {
 export function plaintextScore(text: string): number {
     if (!text) return 0;
 
-    const printable = printableRatio(text);
-    if (printable < 0.85) return printable * 0.1;
+    // A single control character is enough to disqualify. Real decoded text does
+    // not contain them, and a ratio gate lets short garbage through.
+    if (printableRatio(text) < 1) return 0;
 
     // Decoding random bytes as UTF-8 yields mostly Latin-1 symbols, which carry no
     // control characters and so clear the gate above. A low ASCII share is the real

@@ -49,3 +49,6 @@ pnpm-debug.log*
 
 # Cache
 .eslintcache
+
+# npm pack output
+*.tgz

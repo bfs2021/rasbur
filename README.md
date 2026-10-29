@@ -71,12 +71,15 @@ SHA-512 and others.
 
 ## Web app
 
-A full-stack reference implementation lives in this repo and is **not currently
-deployed**. It wraps the same engine in a workspace with live decoding over a WebSocket,
-step-by-step pipeline inspection, saved history, expiring share links, a character-level
-compare tool, Google and GitHub sign-in, and scoped API keys with per-key rate limiting.
+A free demo runs at [rasbur.vercel.app](https://rasbur.vercel.app). It is a full-stack
+reference implementation that wraps the same engine in a workspace with live decoding over
+a WebSocket, step-by-step pipeline inspection, saved history, expiring share links, a
+character-level compare tool, Google and GitHub sign-in, and scoped API keys with per-key
+rate limiting.
 
-It runs locally with `npm run dev`. New work goes into the packages.
+It runs on free-tier hosting, so the first request after a quiet spell can take up to a
+minute, and saved data is kept on a best-effort basis. For anything you rely on, use the
+packages. The demo also runs locally with `npm run dev`.
 
 ## Project structure
 

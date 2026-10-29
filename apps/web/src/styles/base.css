@@ -1,8 +1,9 @@
 :root {
-    color: var(--color-text-primary);
-    background: var(--color-bg-charcoal);
-    font-family: var(--font-sans);
-    line-height: 1.5;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.6;
     font-weight: 400;
     text-rendering: optimizeLegibility;
     font-synthesis: none;
@@ -26,44 +27,28 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    color: var(--color-text-primary);
-    background: var(--color-bg-charcoal);
-    background-attachment: fixed;
-    position: relative;
+    color: var(--color-ink);
+    background-color: var(--color-paper);
+    background-image:
+        linear-gradient(var(--color-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    opacity: 0.012; 
-    pointer-events: none;
-    z-index: 9999;
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
-body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;
-    height: 85vh;
-    background: radial-gradient(
-        circle at 50% -20%,
-        rgba(255, 255, 255, 0.045) 0%,
-        rgba(255, 255, 255, 0.018) 35%,
-        rgba(255, 255, 255, 0.005) 65%,
-        transparent 100%
-    );
-    pointer-events: none;
-    z-index: -1;
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
 }
-
 
 a {
     color: inherit;
@@ -93,8 +78,8 @@ textarea {
     border-radius: var(--radius-card);
     border: 1px solid var(--color-glass-border-soft);
     padding: 1rem;
-    background: rgba(8, 8, 8, 0.9);
-    color: var(--color-text-strong);
+    background: var(--color-paper-raised);
+    color: var(--color-ink);
     outline: none;
     transition:
         border-color var(--motion-fast) ease,
@@ -107,28 +92,26 @@ textarea::placeholder {
 }
 
 textarea:focus {
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-focus);
-    background: rgba(8, 8, 8, 1);
+    border-color: var(--color-accent);
+    box-shadow: none;
 }
 
 button {
-    border: 1px solid var(--color-glass-border-soft);
-    border-radius: var(--radius-pill);
-    padding: 0.82rem 1.2rem;
-    background: #ffffff;
-    color: #000000;
-    font-weight: 700;
+    border: 1px solid var(--color-ink);
+    border-radius: 0;
+    padding: 0.7rem 1.1rem;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 500;
     cursor: pointer;
     transition:
-        transform var(--motion-fast) ease,
-        opacity var(--motion-fast) ease,
+        background-color var(--motion-fast) ease,
         border-color var(--motion-fast) ease;
 }
 
 button:hover:not(:disabled) {
-    transform: translateY(-1px);
-    opacity: 0.9;
+    background: var(--color-accent);
+    border-color: var(--color-accent);
 }
 
 button:disabled {
@@ -146,111 +129,18 @@ pre {
 }
 
 ::selection {
-    background: rgba(255, 255, 255, 0.18);
-    color: #ffffff;
+    background: var(--color-accent);
+    color: var(--color-paper);
 }
 
-
-
-.text-glow-gradient {
-    background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-emphasis-color: transparent;
-    font-weight: 800;
+main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
 }
 
-.text-purple-glow {
-    color: #ffffff;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-}
-.aura-container {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-}
-.aura-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(140px);
-    opacity: 0.04;
-    pointer-events: none;
-}
-.aura-blob--purple {
-    background: #ffffff;
-    width: 500px;
-    height: 500px;
-    top: -10%;
-    left: 10%;
-    animation: floatBlobPurple 22s ease-in-out infinite alternate;
-}
-.aura-blob--teal {
-    background: #ffffff;
-    width: 450px;
-    height: 450px;
-    bottom: 10%;
-    right: 5%;
-    animation: floatBlobTeal 26s ease-in-out infinite alternate;
-}
-.cyber-badge {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 0.25rem 0.65rem;
-    border-radius: 99px;
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--color-text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 0.85rem;
-}
-
-.glow-btn-primary {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.06);
-    cursor: pointer;
-    font-weight: 700;
-}
-
-.glow-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
-    opacity: 0.92;
-}
-
-.glow-card {
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(8, 8, 8, 0.6);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glow-card:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-}
-
-@keyframes floatBlobPurple {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-    100% {
-        transform: translate(80px, 40px) scale(1.1);
-    }
-}
-
-@keyframes floatBlobTeal {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-    100% {
-        transform: translate(-70px, -60px) scale(1.05);
+@media (max-width: 640px) {
+    main {
+        padding: 1.3rem 0.95rem 2rem;
     }
 }

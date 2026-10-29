@@ -36,6 +36,7 @@
     ],
     "scripts": {
         "build": "tsc",
+        "test": "tsc && vitest run",
         "prepublishOnly": "npm run build"
     },
     "dependencies": {
@@ -44,6 +45,7 @@
         "zod": "^4.3.6"
     },
     "devDependencies": {
-        "@types/node": "^20.0.0"
+        "@types/node": "^20.0.0",
+        "vitest": "^3.2.6"
     }
 }

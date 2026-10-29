@@ -1,0 +1,423 @@
+.ws {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.ws-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-bottom: 1.25rem;
+}
+
+.ws-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.ws-status {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+}
+
+.ws-status::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--color-faint);
+}
+
+.ws-status[data-live='true']::before {
+    background: var(--color-confidence-high);
+}
+
+.ws-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+}
+
+.ws-pane {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.ws-pane + .ws-pane {
+    border-left: 1px solid var(--color-rule);
+}
+
+.ws-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--color-rule);
+    background: var(--color-paper);
+    font-size: 0.8125rem;
+}
+
+.ws-bar-title {
+    font-weight: 600;
+}
+
+.ws-bar-meta {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.ws-textarea {
+    flex: 1;
+    min-height: 22rem;
+    padding: 1.25rem;
+    border: none;
+    border-bottom: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    word-break: break-all;
+}
+
+.ws-textarea:focus {
+    border-color: var(--color-rule);
+}
+
+.ws-textarea:focus-visible {
+    outline-offset: -2px;
+}
+
+.ws-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--color-rule);
+}
+
+.ws-select {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+}
+
+.ws-select select {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--color-rule-strong);
+    border-radius: 0;
+    background: var(--color-paper-raised);
+    color: var(--color-ink);
+    font: inherit;
+}
+
+.ws-controls-actions,
+.ws-out-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.ws-ghost,
+.ws-example {
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--color-rule-strong);
+    background: transparent;
+    color: var(--color-ink);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.ws-ghost:hover:not(:disabled),
+.ws-example:hover:not(:disabled) {
+    border-color: var(--color-ink);
+    background: var(--color-paper);
+}
+
+.ws-primary {
+    padding: 0.45rem 1.15rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.ws-examples {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.9rem 1.25rem;
+}
+
+.ws-examples-label {
+    margin-right: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--color-faint);
+}
+
+.ws-example {
+    padding: 0.3rem 0.6rem;
+    border-color: var(--color-rule);
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.ws-result {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.ws-out {
+    padding: 1.1rem 1.25rem 1.4rem;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    animation: ly-in 260ms var(--ease-out) both;
+    animation-delay: calc(var(--n, 1) * 110ms);
+}
+
+.ws-out-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.ws-out-key {
+    font-size: 0.75rem;
+    color: var(--color-accent-wash);
+}
+
+.ws-out-actions .ws-ghost,
+.ws-out-actions .ws-ghost:hover:not(:disabled) {
+    padding: 0.3rem 0.65rem;
+    border-color: rgba(255, 255, 255, 0.45);
+    background: transparent;
+    color: var(--color-paper);
+    font-size: 0.75rem;
+}
+
+.ws-out-actions .ws-ghost:hover:not(:disabled) {
+    border-color: var(--color-paper);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.ws-out-text {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.55;
+    color: var(--color-paper);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.ws-message {
+    padding: 1.5rem 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+}
+
+.ws-message p {
+    margin: 0;
+    max-width: 56ch;
+}
+
+.ws-message a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+}
+
+.ws-message--error {
+    margin: 1.25rem;
+    padding: 0.9rem 1rem;
+    border-left: 2px solid var(--color-confidence-low);
+    background: var(--color-paper);
+    color: var(--color-ink);
+}
+
+.ly {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ly-step {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-rule);
+    animation: ly-in 260ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 110ms);
+}
+
+.ly-head {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ly-num {
+    font-size: 0.75rem;
+    color: var(--color-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.ly-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ly-conf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.ly-conf-track {
+    width: 4.5rem;
+    height: 4px;
+    background: var(--color-rule);
+}
+
+.ly-conf-fill {
+    display: block;
+    height: 100%;
+    background: var(--color-confidence-low);
+}
+
+.ly-step[data-tier='mid'] .ly-conf-fill {
+    background: var(--color-confidence-mid);
+}
+
+.ly-step[data-tier='high'] .ly-conf-fill {
+    background: var(--color-confidence-high);
+}
+
+.ly-conf-value {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.ly-toggle,
+.ly-toggle:hover:not(:disabled) {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--color-rule);
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.ly-toggle:hover:not(:disabled) {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+}
+
+.ly-out {
+    margin: 0.55rem 0 0 2.5rem;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.ly-detail {
+    margin: 0.75rem 0 0 2.5rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper);
+}
+
+.ly-explain {
+    margin: 0 0 0.7rem;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+}
+
+.ly-key {
+    margin: 0 0 0.3rem;
+    font-size: 0.75rem;
+    color: var(--color-faint);
+}
+
+.ly-in {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.ly-empty {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+}
+
+@keyframes ly-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .ws-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ws-pane + .ws-pane {
+        border-left: none;
+        border-top: 1px solid var(--color-rule);
+    }
+
+    .ws-textarea {
+        min-height: 12rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .ws {
+        padding: 1.25rem 0.75rem 2rem;
+    }
+
+    .ly-head {
+        grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+    }
+
+    .ly-conf {
+        grid-column: 2 / -1;
+        grid-row: 2;
+    }
+
+    .ly-out,
+    .ly-detail {
+        margin-left: 2.25rem;
+    }
+}

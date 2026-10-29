@@ -1,64 +1,58 @@
-import { useState, useEffect, Fragment } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import type { DecodeResult, DecodeOptions, DecoderInfo } from '@rasbur/shared';
 import { api } from '@/services/api.js';
 import { getAccessToken } from '@/services/auth.js';
 import DecodePipeline from '@/components/DecodePipeline.js';
 import { useWebSocket } from '@/hooks/useWebSocket.js';
 import { useAuth } from '@/context/AuthContext.js';
-import {
-    Share2,
-    Copy,
-    Check,
-    CornerUpLeft,
-    ClipboardPaste,
-    Eraser,
-    Sparkles,
-    ScanSearch,
-    Loader2,
-    AlertTriangle,
-} from 'lucide-react';
 
 type RequestState = 'idle' | 'loading' | 'success' | 'error';
+type ErrorKind = 'limit' | 'unreachable';
 
-type LiveDecodeSuccess = {
-    ok: true;
-    result: DecodeResult;
-};
-
-type LiveDecodeError = {
-    ok: false;
-    error: string;
-    issues?: Array<{ path: string; message: string }>;
-};
-
-type LiveDecodeResponse = LiveDecodeSuccess | LiveDecodeError;
+type LiveDecodeResponse =
+    | { ok: true; result: DecodeResult }
+    | { ok: false; error: string; issues?: Array<{ path: string; message: string }> };
 
 const LIVE_DECODE_DELAY_MS = 300;
 
-// Base64 -> Hex -> "Hello Rasbur": demonstrates a multi-layer pipeline
-const SAMPLE_INPUT = 'NDg2NTZjNmM2ZjIwNTI2MTczNjI3NTcy';
+const EXAMPLES = [
+    {
+        label: 'Three layers',
+        value: 'NzQ2ODY1MjA3MDYxNzk2YzZmNjE2NDIwNzc2MTczMjA3NzcyNjE3MDcwNjU2NDIwNzQ2ODcyNjU2NTIwNzQ2OTZkNjU3Mw%3D%3D',
+    },
+    {
+        label: 'JWT',
+        value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyYXNidXIiLCJyb2xlIjoicmVhZGVyIiwiaWF0IjoxNzMwMDAwMDAwfQ.Qm9lQ2mXhLr0N6aTq3vKjYw1sPzR8uFtGdE5cHbVnAo',
+    },
+    { label: 'Not encoded', value: 'AKIAIOSFODNN7EXAMPLE' },
+];
+
+function errorKindOf(err: unknown): ErrorKind {
+    return err instanceof Error && err.message.includes('status 429') ? 'limit' : 'unreachable';
+}
 
 export default function DecodePage() {
     const [searchParams] = useSearchParams();
-    const [input, setInput] = useState(searchParams.get('payload') || '');
+    const initialPayload = searchParams.get('payload') ?? '';
+    const [input, setInput] = useState(initialPayload);
     const [result, setResult] = useState<DecodeResult | null>(null);
     const [requestState, setRequestState] = useState<RequestState>('idle');
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [decodeSource, setDecodeSource] = useState<'live' | 'rest' | null>(null);
+    const [errorKind, setErrorKind] = useState<ErrorKind | null>(null);
 
     const { isAuthenticated } = useAuth();
     // Pass the auth token so the socket can authenticate. Without it the server
     // rejects the handshake and the badge shows a permanent "Connection error"
     // even though REST decoding still works. Keyed on isAuthenticated so login
     // /logout re-reads the token and reconnects.
-    const { socket, status, isConnected } = useWebSocket({
+    const { socket, isConnected } = useWebSocket({
         token: isAuthenticated ? getAccessToken() : null,
     });
     const [shareState, setShareState] = useState<'idle' | 'sharing' | 'copied' | 'error'>('idle');
     const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
     const [decoders, setDecoders] = useState<DecoderInfo[]>([]);
     const [forcedDecoder, setForcedDecoder] = useState('');
+    const requestIdRef = useRef(0);
 
     useEffect(() => {
         async function loadDecoders() {
@@ -72,10 +66,84 @@ export default function DecodePage() {
         void loadDecoders();
     }, []);
 
-    async function handlePasteInput() {
+    function clearResult() {
+        requestIdRef.current += 1;
+        setResult(null);
+        setRequestState('idle');
+        setErrorKind(null);
+    }
+
+    async function runDecode(value: string, decoderName: string = forcedDecoder) {
+        const trimmed = value.trim();
+        if (!trimmed) {
+            clearResult();
+            return;
+        }
+
+        const requestId = ++requestIdRef.current;
+        const options: DecodeOptions | undefined = decoderName
+            ? { forceDecoder: decoderName }
+            : undefined;
+        setRequestState('loading');
+        setErrorKind(null);
+
+        function applyResult(next: DecodeResult) {
+            if (requestId !== requestIdRef.current) return;
+            setResult(next);
+            setRequestState('success');
+        }
+
+        async function viaRest() {
+            try {
+                applyResult(await api.decode(trimmed, options));
+            } catch (err) {
+                if (requestId !== requestIdRef.current) return;
+                setResult(null);
+                setRequestState('error');
+                setErrorKind(errorKindOf(err));
+            }
+        }
+
+        if (!socket || !isConnected) {
+            await viaRest();
+            return;
+        }
+
+        socket.emit(
+            'decode:live',
+            options ? { input: trimmed, options } : { input: trimmed },
+            (response: LiveDecodeResponse) => {
+                if (response.ok) applyResult(response.result);
+                else void viaRest();
+            }
+        );
+    }
+
+    useEffect(() => {
+        if (initialPayload) void runDecode(initialPayload);
+    }, []);
+
+    useEffect(() => {
+        if (!isConnected) return;
+        if (!input.trim()) {
+            clearResult();
+            return;
+        }
+        // Only enter the loading state once the debounce settles, otherwise the
+        // button flickers to "Decoding..." on every keystroke.
+        const timeoutId = window.setTimeout(() => void runDecode(input), LIVE_DECODE_DELAY_MS);
+        return () => window.clearTimeout(timeoutId);
+    }, [input, isConnected, forcedDecoder]);
+
+    function loadInput(value: string) {
+        setInput(value);
+        if (!isConnected) void runDecode(value);
+    }
+
+    async function handlePasteButton() {
         try {
             const text = await navigator.clipboard.readText();
-            if (text) setInput(text);
+            if (text) loadInput(text);
         } catch (err) {
             console.error('Error reading clipboard:', err);
         }
@@ -92,12 +160,7 @@ export default function DecodePage() {
         }
     }
 
-    function handleUseAsInput() {
-        if (!result) return;
-        setInput(result.finalOutput);
-    }
-
-    async function handleShareWorkspaceResult() {
+    async function handleShare() {
         if (!result) return;
         setShareState('sharing');
 
@@ -110,7 +173,6 @@ export default function DecodePage() {
                     finalOutput: result.finalOutput,
                 }
             );
-
             if (!historyResponse.ok || !historyResponse.history?._id) {
                 throw new Error('Failed to create history entry');
             }
@@ -122,231 +184,89 @@ export default function DecodePage() {
                     expiresInDays: 30,
                 }
             );
-
             if (!shareResponse.ok || !shareResponse.share?.slug) {
                 throw new Error('Failed to create share link');
             }
 
-            const shareUrl = `${window.location.origin}/s/${shareResponse.share.slug}`;
-            await navigator.clipboard.writeText(shareUrl);
-
+            await navigator.clipboard.writeText(
+                `${window.location.origin}/s/${shareResponse.share.slug}`
+            );
             setShareState('copied');
-            setTimeout(() => {
-                setShareState('idle');
-            }, 2000);
+            setTimeout(() => setShareState('idle'), 2000);
         } catch (err) {
             console.error('Error sharing result:', err);
             setShareState('error');
-            setTimeout(() => {
-                setShareState('idle');
-            }, 3000);
+            setTimeout(() => setShareState('idle'), 3000);
         }
     }
 
-    const decodeOptions: DecodeOptions | undefined = forcedDecoder
-        ? { forceDecoder: forcedDecoder }
-        : undefined;
-
-    async function decodeWithRest(value: string) {
-        const decodeResult = await api.decode(value, decodeOptions);
-        setResult(decodeResult);
-        setRequestState('success');
-        setErrorMessage(null);
-        setDecodeSource('rest');
-    }
-
-    async function handleDecode() {
-        const trimmedInput = input.trim();
-
-        if (!trimmedInput) {
-            setRequestState('error');
-            setErrorMessage('Please enter something to decode.');
-            setResult(null);
-            setDecodeSource(null);
-            return;
-        }
-
-        try {
-            setRequestState('loading');
-            setErrorMessage(null);
-            setResult(null);
-
-            await decodeWithRest(trimmedInput);
-        } catch (err) {
-            setRequestState('error');
-            setErrorMessage('Failed to decode input.');
-            setResult(null);
-            setDecodeSource(null);
-        }
-    }
-
-    useEffect(() => {
-        const trimmedInput = input.trim();
-
-        if (!trimmedInput) {
-            setResult(null);
-            setRequestState('idle');
-            setErrorMessage(null);
-            setDecodeSource(null);
-            return;
-        }
-
-        let cancelled = false;
-
-        async function runRestFallback() {
-            try {
-                const decodeResult = await api.decode(
-                    trimmedInput,
-                    forcedDecoder ? { forceDecoder: forcedDecoder } : undefined
-                );
-
-                if (cancelled) {
-                    return;
-                }
-                setResult(decodeResult);
-                setRequestState('success');
-                setErrorMessage(null);
-                setDecodeSource('rest');
-            } catch (err) {
-                if (cancelled) {
-                    return;
-                }
-
-                setRequestState('error');
-                setErrorMessage('Failed to decode input.');
-                setResult(null);
-                setDecodeSource(null);
-            }
-        }
-        const timeoutId = window.setTimeout(() => {
-            // Only enter the loading state once the debounce settles, otherwise the
-            // button flickers to "Decoding..." on every keystroke.
-            setRequestState('loading');
-            setErrorMessage(null);
-
-            if (!socket || !isConnected) {
-                void runRestFallback();
-                return;
-            }
-
-            const payload: { input: string; options?: DecodeOptions } = {
-                input: trimmedInput,
-            };
-            if (forcedDecoder) {
-                payload.options = { forceDecoder: forcedDecoder };
-            }
-
-            socket.emit('decode:live', payload, (response: LiveDecodeResponse) => {
-                if (cancelled) {
-                    return;
-                }
-                if (!response.ok) {
-                    void runRestFallback();
-                    return;
-                }
-
-                setResult(response.result);
-                setRequestState('success');
-                setErrorMessage(null);
-                setDecodeSource('live');
-            });
-        }, LIVE_DECODE_DELAY_MS);
-
-        return () => {
-            cancelled = true;
-            window.clearTimeout(timeoutId);
-        };
-    }, [input, socket, isConnected, forcedDecoder]);
-
+    const hasSteps = Boolean(result && result.steps.length > 0);
     const isLoading = requestState === 'loading';
-    const connectionLabel =
-        status === 'connected'
-            ? 'Live connected'
-            : status === 'connecting'
-              ? 'Connecting'
-              : status === 'error'
-                ? 'Connection error'
-                : 'Offline';
 
-    const connectionClassName = `connection-status connection-status--${status}`;
+    const statusText = isConnected
+        ? 'Live. Decodes as you type.'
+        : 'Decodes when you press Decode, paste, or pick an example.';
+
+    const shareLabel =
+        shareState === 'sharing'
+            ? 'Saving'
+            : shareState === 'copied'
+              ? 'Link copied'
+              : shareState === 'error'
+                ? 'Could not share'
+                : 'Share link';
+
     return (
-        <main className="decode-page">
-            <section className="workspace-bar">
-                <div>
-                    <p className="decode-kicker">Workspace</p>
-                    <h1 className="workspace-title">Decode</h1>
-                </div>
-                <div className="workspace-bar-right">
-                    {decoders.length > 0 && (
-                        <span className="workspace-stat">{decoders.length} decoders ready</span>
-                    )}
-                    <span className={connectionClassName}>{connectionLabel}</span>
-                </div>
-            </section>
+        <div className="ws">
+            <header className="ws-head">
+                <h1 className="ws-title">Workspace</h1>
+                <p className="ws-status" data-live={isConnected}>
+                    {statusText}
+                </p>
+            </header>
 
-            <section className="decode-shell">
-                <div className="decode-panel glass-surface">
-                    <div className="panel-header">
-                        <div>
-                            <h2>Input</h2>
-                            <p className="panel-meta">
-                                {isConnected
-                                    ? 'Live decoding as you type'
-                                    : 'Paste raw encoded text'}
-                            </p>
-                        </div>
-
-                        <span className="char-count">{input.length} chars</span>
-                    </div>
-
-                    <div className="input-toolbar">
-                        <button type="button" className="icon-btn" onClick={handlePasteInput}>
-                            <ClipboardPaste size={13} />
-                            Paste
-                        </button>
-                        <button
-                            type="button"
-                            className="icon-btn"
-                            onClick={() => setInput(SAMPLE_INPUT)}
-                        >
-                            <Sparkles size={13} />
-                            Sample
-                        </button>
-                        <button
-                            type="button"
-                            className="icon-btn"
-                            onClick={() => setInput('')}
-                            disabled={!input}
-                        >
-                            <Eraser size={13} />
-                            Clear
-                        </button>
+            <div className="ws-grid">
+                <section className="ws-pane" aria-label="Input">
+                    <div className="ws-bar">
+                        <span className="ws-bar-title">Input</span>
+                        <span className="ws-bar-meta">{input.length} characters</span>
                     </div>
 
                     <textarea
-                        rows={10}
+                        className="ws-textarea"
                         value={input}
-                        onChange={(event) => setInput(event.target.value)}
+                        spellCheck={false}
+                        onChange={(event) => {
+                            setInput(event.target.value);
+                            if (!event.target.value.trim()) clearResult();
+                        }}
+                        onPaste={(event) => {
+                            if (isConnected) return;
+                            const field = event.currentTarget;
+                            window.setTimeout(() => void runDecode(field.value), 0);
+                        }}
                         onKeyDown={(event) => {
                             if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
                                 event.preventDefault();
-                                void handleDecode();
+                                void runDecode(input);
                             }
                         }}
-                        placeholder="Paste Base64, Hex, JWT, URL-encoded, Morse, or any layered payload..."
+                        placeholder="Paste anything encoded: base64, hex, a JWT, URL-encoded text, Morse, or several layers stacked."
                         aria-label="Encoded input"
                     />
 
-                    <div className="decode-actions">
-                        <label className="decoder-select-wrap">
-                            <span className="decoder-select-label">Decoder</span>
+                    <div className="ws-controls">
+                        <label className="ws-select">
+                            <span>Decoder</span>
                             <select
-                                className="decoder-select"
                                 value={forcedDecoder}
-                                onChange={(event) => setForcedDecoder(event.target.value)}
-                                aria-label="Force a specific decoder"
+                                onChange={(event) => {
+                                    setForcedDecoder(event.target.value);
+                                    if (!isConnected && input.trim())
+                                        void runDecode(input, event.target.value);
+                                }}
                             >
-                                <option value="">Auto-detect</option>
+                                <option value="">Detect automatically</option>
                                 {decoders.map((decoder) => (
                                     <option key={decoder.name} value={decoder.name}>
                                         {decoder.name}
@@ -355,156 +275,139 @@ export default function DecodePage() {
                             </select>
                         </label>
 
-                        <div className="decode-actions-right">
-                            <span className="kbd-hint" aria-hidden="true">
-                                <kbd>Ctrl</kbd>
-                                <kbd>↵</kbd>
-                            </span>
-                            <button type="button" onClick={handleDecode} disabled={isLoading}>
-                                {isLoading ? 'Decoding...' : 'Decode'}
+                        <div className="ws-controls-actions">
+                            <button type="button" className="ws-ghost" onClick={handlePasteButton}>
+                                Paste
+                            </button>
+                            <button
+                                type="button"
+                                className="ws-ghost"
+                                onClick={() => {
+                                    setInput('');
+                                    clearResult();
+                                }}
+                                disabled={!input}
+                            >
+                                Clear
+                            </button>
+                            <button
+                                type="button"
+                                className="ws-primary"
+                                onClick={() => void runDecode(input)}
+                                disabled={isLoading || !input.trim()}
+                            >
+                                {isLoading ? 'Decoding' : 'Decode'}
                             </button>
                         </div>
                     </div>
 
-                    {errorMessage && <p className="decode-error">{errorMessage}</p>}
-                </div>
+                    <div className="ws-examples">
+                        <span className="ws-examples-label">Examples</span>
+                        {EXAMPLES.map((example) => (
+                            <button
+                                key={example.label}
+                                type="button"
+                                className="ws-example"
+                                onClick={() => loadInput(example.value)}
+                            >
+                                {example.label}
+                            </button>
+                        ))}
+                    </div>
+                </section>
 
-                <div className="result-panel glass-surface">
-                    <div className="result-header">
-                        <div>
-                            <p className="result-kicker">Result</p>
-                            <h2>Decoded output</h2>
-                        </div>
-
-                        {result && (
-                            <div className="result-actions-wrapper">
-                                {isAuthenticated && (
-                                    <button
-                                        type="button"
-                                        onClick={handleShareWorkspaceResult}
-                                        disabled={shareState === 'sharing'}
-                                        className={`share-btn ${shareState === 'copied' ? 'share-btn--copied' : ''} ${shareState === 'error' ? 'share-btn--error' : ''}`}
-                                        title="Share this decode result with a public link"
-                                    >
-                                        <Share2 size={13} />
-                                        {shareState === 'sharing'
-                                            ? 'Sharing...'
-                                            : shareState === 'copied'
-                                              ? 'Copied!'
-                                              : shareState === 'error'
-                                                ? 'Error!'
-                                                : 'Share'}
-                                    </button>
-                                )}
-                                <span className="result-badge">
-                                    {result.steps.length}{' '}
-                                    {result.steps.length === 1 ? 'step' : 'steps'}
-                                </span>
-                            </div>
-                        )}
+                <section className="ws-pane ws-pane--result" aria-label="Result" aria-live="polite">
+                    <div className="ws-bar">
+                        <span className="ws-bar-title">Layers</span>
+                        <span className="ws-bar-meta">
+                            {isLoading
+                                ? 'Decoding'
+                                : hasSteps && result
+                                  ? `${result.steps.length} ${result.steps.length === 1 ? 'layer' : 'layers'}`
+                                  : ''}
+                        </span>
                     </div>
 
-                    {requestState === 'loading' ? (
-                        <div className="result-empty-card result-loading-card result-state">
-                            <Loader2
-                                className="result-state-icon result-state-icon--spin"
-                                size={22}
-                            />
-                            <p className="result-empty">
-                                Analyzing input and applying decode pipeline...
-                            </p>
+                    {requestState === 'error' ? (
+                        <div className="ws-message ws-message--error">
+                            {errorKind === 'limit' ? (
+                                <p>
+                                    You have reached today's limit for decoding without an account.{' '}
+                                    <Link to="/login">Sign in</Link> to raise it.
+                                </p>
+                            ) : (
+                                <p>
+                                    Could not reach the decoder. Check that the API is running, then
+                                    try again.
+                                </p>
+                            )}
                         </div>
-                    ) : requestState === 'error' ? (
-                        <div className="result-empty-card result-error-card result-state">
-                            <AlertTriangle
-                                className="result-state-icon result-state-icon--error"
-                                size={22}
-                            />
-                            <p className="result-empty">
-                                Unable to decode this input right now. Check the format and try
-                                again.
-                            </p>
+                    ) : result && hasSteps ? (
+                        <div className="ws-result" key={result.originalInput}>
+                            <DecodePipeline steps={result.steps} />
+
+                            <div
+                                className="ws-out"
+                                style={{ '--n': result.steps.length } as CSSProperties}
+                            >
+                                <div className="ws-out-head">
+                                    <span className="ws-out-key">Output</span>
+                                    <div className="ws-out-actions">
+                                        <button
+                                            type="button"
+                                            className="ws-ghost"
+                                            onClick={handleCopyOutput}
+                                        >
+                                            {copyState === 'copied' ? 'Copied' : 'Copy'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="ws-ghost"
+                                            onClick={() => loadInput(result.finalOutput)}
+                                        >
+                                            Decode this next
+                                        </button>
+                                        {isAuthenticated && (
+                                            <button
+                                                type="button"
+                                                className="ws-ghost"
+                                                onClick={handleShare}
+                                                disabled={shareState === 'sharing'}
+                                            >
+                                                {shareLabel}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <pre className="ws-out-text">{result.finalOutput}</pre>
+                            </div>
                         </div>
-                    ) : requestState === 'idle' || !result ? (
-                        <div className="result-empty-card result-state">
-                            <ScanSearch className="result-state-icon" size={22} />
-                            <p className="result-empty">
-                                Paste or type on the left — decoded output and pipeline steps appear
-                                here instantly.
-                            </p>
+                    ) : result ? (
+                        <div className="ws-message">
+                            {forcedDecoder ? (
+                                <p>
+                                    {forcedDecoder} could not decode this input. Switch the decoder
+                                    back to automatic detection to let Rasbur choose.
+                                </p>
+                            ) : (
+                                <p>
+                                    No confident decode. This looks like plaintext, or it is not a
+                                    format Rasbur reads. Rather than guess, it leaves the input as
+                                    it was.
+                                </p>
+                            )}
                         </div>
                     ) : (
-                        <>
-                            {result.steps.length > 0 && (
-                                <div className="encoder-chain">
-                                    <span className="encoder-chain-label">Detected</span>
-                                    {result.steps.map((step, index) => (
-                                        <Fragment key={`${step.decoderName}-${index}`}>
-                                            {index > 0 && (
-                                                <span className="encoder-arrow" aria-hidden="true">
-                                                    →
-                                                </span>
-                                            )}
-                                            <span className="encoder-chip">{step.decoderName}</span>
-                                        </Fragment>
-                                    ))}
-                                </div>
-                            )}
-
-                            <div className="result-grid">
-                                <div className="result-block">
-                                    <p className="block-label">Original Input</p>
-                                    <pre>{result.originalInput}</pre>
-                                </div>
-
-                                <div className="result-block result-highlight">
-                                    <div className="block-header">
-                                        <p className="block-label">Final Output</p>
-                                        <div className="block-actions">
-                                            <button
-                                                type="button"
-                                                className="icon-btn"
-                                                onClick={handleUseAsInput}
-                                                title="Use this output as new input"
-                                            >
-                                                <CornerUpLeft size={13} />
-                                                Use as input
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={`icon-btn ${copyState === 'copied' ? 'icon-btn--ok' : ''}`}
-                                                onClick={handleCopyOutput}
-                                                title="Copy decoded output"
-                                            >
-                                                {copyState === 'copied' ? (
-                                                    <>
-                                                        <Check size={13} />
-                                                        Copied
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Copy size={13} />
-                                                        Copy
-                                                    </>
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <pre>{result.finalOutput}</pre>
-                                </div>
-                            </div>
-
-                            <div className="result-block">
-                                <div className="steps-header">
-                                    <h3>Pipeline Steps</h3>
-                                    <p className="steps-meta">Step-by-step decoder output</p>
-                                </div>
-                                <DecodePipeline steps={result.steps} />
-                            </div>
-                        </>
+                        <div className="ws-message ws-message--idle">
+                            <p>
+                                Paste an encoded string, or pick one of the examples. Each layer
+                                Rasbur unwraps shows up here, with its confidence and the output at
+                                that step.
+                            </p>
+                        </div>
                     )}
-                </div>
-            </section>
-        </main>
+                </section>
+            </div>
+        </div>
     );
 }

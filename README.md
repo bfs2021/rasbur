@@ -20,7 +20,7 @@ Free and open source under the MIT license.
 
 | Package                                                              | Version | Description                                   |
 | -------------------------------------------------------------------- | ------- | --------------------------------------------- |
-| [`@rasbur/decoders`](https://www.npmjs.com/package/@rasbur/decoders) | 0.1.1   | The decoding engine. No dependencies.         |
+| [`@rasbur/decoders`](https://www.npmjs.com/package/@rasbur/decoders) | 0.1.2   | The decoding engine. No dependencies.         |
 | [`@rasbur/mcp`](https://www.npmjs.com/package/@rasbur/mcp)           | 0.1.0   | MCP server giving an AI agent a real decoder. |
 
 ### Use it in code

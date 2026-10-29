@@ -3,72 +3,50 @@ import LegalPage from '@/components/LegalPage.js';
 export default function PrivacyPage() {
     return (
         <LegalPage
-            title="Privacy Policy"
-            lastUpdated="June 10, 2026"
-            intro="Rasbur is a string decoding platform currently in beta. This policy explains what data we collect, why we collect it, and how it is handled. The short version: we store as little as possible, and your decode inputs are not stored unless you explicitly save them."
+            title="Privacy policy"
+            lastUpdated="October 29, 2026"
+            intro="Rasbur is open-source decoding software. The npm packages run on your own machine and send nothing anywhere. This policy covers the hosted workspace, which sends what you decode to the Rasbur API."
             sections={[
                 {
-                    heading: 'What we collect',
-                    body: (
-                        <>
-                            <p>
-                                <strong className="text-neutral-200">Account data.</strong> If you
-                                sign in with Google or GitHub, we receive your name, email address,
-                                and avatar from the OAuth provider. We never see or store your
-                                password.
-                            </p>
-                            <p>
-                                <strong className="text-neutral-200">Decode history.</strong> Decode
-                                inputs are processed in memory and are not stored — unless you are
-                                signed in and explicitly save a result to your history or create a
-                                share link.
-                            </p>
-                            <p>
-                                <strong className="text-neutral-200">API usage.</strong> If you
-                                create API keys, we store usage counts and timestamps to enforce
-                                rate limits. We do not log the content of API decode requests.
-                            </p>
-                        </>
-                    ),
-                },
-                {
-                    heading: 'What we do not do',
-                    body: (
-                        <>
-                            <p>
-                                We do not sell your data. We do not run third-party advertising or
-                                tracking scripts. We do not read your decode inputs for any purpose
-                                other than returning a result to you.
-                            </p>
-                        </>
-                    ),
-                },
-                {
-                    heading: 'Cookies and local storage',
+                    heading: 'Account data',
                     body: (
                         <p>
-                            We use browser local storage to keep your authentication tokens so you
-                            stay signed in. No third-party tracking cookies are set.
+                            If you sign in with Google or GitHub, the workspace receives your name,
+                            email address, and avatar from that provider. It does not receive or
+                            store your password.
                         </p>
                     ),
                 },
                 {
-                    heading: 'Infrastructure',
+                    heading: 'Decode data',
                     body: (
                         <p>
-                            Rasbur runs on Vercel (frontend), Render (backend API), MongoDB Atlas
-                            (database), and Upstash (rate limiting). Data is processed on their
-                            infrastructure under their respective security practices.
+                            The workspace sends each input to the Rasbur API to decode it. Inputs
+                            are not stored, and request logs record only the method, path, status
+                            and timing, never the input itself. An input is stored only if you save
+                            it to your history or create a share link. Anyone with a share link can
+                            see the result until the link expires. Links created from the workspace
+                            expire after 30 days.
                         </p>
                     ),
                 },
                 {
-                    heading: 'Deleting your data',
+                    heading: 'Usage limits',
                     body: (
                         <p>
-                            You can delete saved history entries and revoke API keys from your
-                            account at any time. To request full account deletion, open an issue on
-                            GitHub and we will remove your account data.
+                            To enforce daily decode limits, the API counts requests against your IP
+                            address when you are signed out, and against your account when you are
+                            signed in. The counts reset each day.
+                        </p>
+                    ),
+                },
+                {
+                    heading: 'Local storage',
+                    body: (
+                        <p>
+                            The workspace uses browser local storage for your sign-in tokens and for
+                            the page to return to after signing in. It does not use advertising or
+                            tracking cookies, and it runs no analytics.
                         </p>
                     ),
                 },
@@ -76,11 +54,9 @@ export default function PrivacyPage() {
                     heading: 'Open source',
                     body: (
                         <p>
-                            Rasbur is open source under the MIT license. You can read exactly how
-                            inputs are processed, and verify everything in this policy, in the
-                            public source on{' '}
+                            Rasbur is released under the MIT license. Its source is available on{' '}
                             <a
-                                className="text-neutral-300 hover:text-white underline underline-offset-2"
+                                className="pg-link"
                                 href="https://github.com/omanshchoudhary/rasbur"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -88,15 +64,6 @@ export default function PrivacyPage() {
                                 GitHub
                             </a>
                             .
-                        </p>
-                    ),
-                },
-                {
-                    heading: 'Changes to this policy',
-                    body: (
-                        <p>
-                            As Rasbur is in beta, this policy may change as features evolve. The
-                            "Last updated" date at the top reflects the latest revision.
                         </p>
                     ),
                 },

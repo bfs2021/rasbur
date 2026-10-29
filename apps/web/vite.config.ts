@@ -24,10 +24,6 @@ export default defineConfig(({ mode }) => {
                     target: proxyTarget,
                     changeOrigin: true,
                 },
-                '/docs': {
-                    target: proxyTarget,
-                    changeOrigin: true,
-                },
                 '/health': {
                     target: proxyTarget,
                     changeOrigin: true,

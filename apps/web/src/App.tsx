@@ -7,7 +7,6 @@ import { AuthProvider } from './context/AuthContext.js';
 import LoginPage from './pages/LoginPage.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import ProfilePage from './pages/ProfilePage.js';
-import ComingSoonPage from './pages/ComingSoonPage.js';
 import HistoryPage from './pages/HistoryPage.js';
 import SharedResultPage from './pages/SharedResultPage.js';
 import ComparePage from './pages/ComparePage.js';
@@ -37,27 +36,7 @@ export default function App() {
                             <Route path="/compare" element={<ComparePage />} />
                             <Route path="/settings/profile" element={<ProfilePage />} />
                             <Route path="/history" element={<HistoryPage />} />
-                            <Route
-                                path="/plugins"
-                                element={
-                                    <ComingSoonPage
-                                        featureName="Custom Plugins"
-                                        phase="Phase 10"
-                                        description="Write, test, and sandbox-run custom string decoders in our Monaco Editor workspace."
-                                    />
-                                }
-                            />
                             <Route path="/settings/api-keys" element={<ApiKeysPage />} />
-                            <Route
-                                path="/settings/webhooks"
-                                element={
-                                    <ComingSoonPage
-                                        featureName="Webhook Integrations"
-                                        phase="Phase 13"
-                                        description="Configure, activate, and review delivery logs for real-time decoding event webhooks."
-                                    />
-                                }
-                            />
                         </Route>
                         <Route path="*" element={<NotFoundPage />} />
                     </Route>

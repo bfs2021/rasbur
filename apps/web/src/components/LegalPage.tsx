@@ -14,55 +14,38 @@ interface LegalPageProps {
 
 export default function LegalPage({ title, lastUpdated, intro, sections }: LegalPageProps) {
     return (
-        <main className="bg-cyber-grid relative min-h-screen px-4 py-12 md:py-20 mx-auto max-w-3xl">
-            <div className="aura-container">
-                <div className="aura-blob aura-blob--purple" />
-                <div className="aura-blob aura-blob--teal" />
-            </div>
-
-            <div className="relative z-10 text-left">
-                <p className="font-mono text-xs tracking-wider uppercase text-neutral-500 mb-3">
-                    Last updated: {lastUpdated}
-                </p>
-                <h1 className="text-3xl md:text-5xl font-black text-white mb-6">{title}</h1>
-                <p className="text-neutral-400 text-sm md:text-base leading-relaxed mb-10">
-                    {intro}
-                </p>
-
-                <div className="flex flex-col gap-8">
-                    {sections.map((section) => (
-                        <section
-                            key={section.heading}
-                            className="border border-white/5 bg-neutral-950/40 rounded-2xl p-6 md:p-8"
-                        >
-                            <h2 className="text-lg font-bold text-white mb-3">{section.heading}</h2>
-                            <div className="text-neutral-400 text-sm leading-relaxed flex flex-col gap-3">
-                                {section.body}
-                            </div>
-                        </section>
-                    ))}
+        <main className="pg-page pg-page--narrow">
+            <header className="pg-header">
+                <div>
+                    <p className="pg-kicker">Last updated {lastUpdated}</p>
+                    <h1 className="pg-title">{title}</h1>
+                    <p className="pg-subtitle">{intro}</p>
                 </div>
-
-                <div className="mt-12 text-sm text-neutral-500">
-                    Questions? Open an issue on{' '}
-                    <a
-                        className="text-neutral-300 hover:text-white underline underline-offset-2"
-                        href="https://github.com/omanshchoudhary/rasbur/issues"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        GitHub
-                    </a>{' '}
-                    or head back to the{' '}
-                    <Link
-                        className="text-neutral-300 hover:text-white underline underline-offset-2"
-                        to="/"
-                    >
-                        home page
-                    </Link>
-                    .
-                </div>
+            </header>
+            <div className="pg-stack">
+                {sections.map((section) => (
+                    <section key={section.heading} className="pg-section pg-rich">
+                        <h2 className="pg-section-heading">{section.heading}</h2>
+                        <div className="pg-section-copy">{section.body}</div>
+                    </section>
+                ))}
             </div>
+            <p className="pg-copy">
+                Questions? Open an issue on{' '}
+                <a
+                    className="pg-link"
+                    href="https://github.com/omanshchoudhary/rasbur/issues"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    GitHub
+                </a>{' '}
+                or return to the{' '}
+                <Link className="pg-link" to="/">
+                    home page
+                </Link>
+                .
+            </p>
         </main>
     );
 }

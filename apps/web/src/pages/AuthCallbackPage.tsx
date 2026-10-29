@@ -5,7 +5,6 @@ export default function AuthCallbackPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Get your tokens from the url
         const params = new URLSearchParams(window.location.search);
 
         const accessToken = params.get('accessToken');
@@ -19,12 +18,15 @@ export default function AuthCallbackPage() {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
-        // Return the user to the page that sent them to login, if any.
         const redirectTo = localStorage.getItem('redirectAfterLogin');
         localStorage.removeItem('redirectAfterLogin');
 
         navigate(redirectTo || '/decode');
     }, [navigate]);
 
-    return <p>Signing you in...</p>;
+    return (
+        <main className="pg-page pg-page--compact pg-auth">
+            <p className="pg-muted">Signing you in...</p>
+        </main>
+    );
 }

@@ -11,6 +11,7 @@ import {
     decodePipeline,
     plaintextScore,
 } from './index.js';
+import { decodeBase64, bytesToUtf8, decodeBase64Text } from './utils/base64.js';
 
 describe('Base64Decoder', () => {
     const d = new Base64Decoder();
@@ -200,6 +201,53 @@ describe('plaintextScore', () => {
 
     it('returns 0 for empty input', () => {
         expect(plaintextScore('')).toBe(0);
+    });
+});
+
+describe('base64 helper', () => {
+    it('decodes padded and unpadded base64 to the same bytes', () => {
+        expect([...decodeBase64('SGVsbG8gV29ybGQ=')]).toEqual([...Buffer.from('Hello World')]);
+        expect([...decodeBase64('SGVsbG8gV29ybGQ')]).toEqual([...Buffer.from('Hello World')]);
+    });
+
+    it('decodes base64url characters', () => {
+        expect([...decodeBase64('-_-_')]).toEqual([...Buffer.from('-_-_', 'base64')]);
+        expect([...decodeBase64('a-g_')]).toEqual([...Buffer.from('a-g_', 'base64')]);
+    });
+
+    it('decodes JWT header and payload segments', () => {
+        expect(decodeBase64Text('eyJhbGciOiJIUzI1NiJ9')).toBe('{"alg":"HS256"}');
+        expect(decodeBase64Text('eyJzdWIiOiJyYXNidXIifQ')).toBe('{"sub":"rasbur"}');
+    });
+
+    it('skips invalid characters instead of throwing', () => {
+        expect(decodeBase64Text('SGV!s!bG8=')).toBe('Hello');
+        expect(decodeBase64('!!!')).toHaveLength(0);
+    });
+
+    it('handles missing padding of every remainder length', () => {
+        expect([...decodeBase64('QQ')]).toEqual([...Buffer.from('QQ', 'base64')]);
+        expect([...decodeBase64('QUJDR')]).toEqual([...Buffer.from('QUJDR', 'base64')]);
+        expect([...decodeBase64('QUJDRE')]).toEqual([...Buffer.from('QUJDRE', 'base64')]);
+        expect([...decodeBase64('QUJDREF')]).toEqual([...Buffer.from('QUJDREF', 'base64')]);
+        expect([...decodeBase64('QUJDREFU')]).toEqual([...Buffer.from('QUJDREFU', 'base64')]);
+        expect([...decodeBase64('QUJDREFUR')]).toEqual([...Buffer.from('QUJDREFUR', 'base64')]);
+        expect([...decodeBase64('A')]).toEqual([]);
+        expect(decodeBase64('')).toHaveLength(0);
+    });
+
+    it('stops decoding at the first padding character', () => {
+        expect([...decodeBase64('QQ==QQ==')]).toEqual([65]);
+    });
+
+    it('converts bytes to utf-8 with replacement chars for invalid sequences', () => {
+        expect(bytesToUtf8(Uint8Array.from([200]))).toBe('\uFFFD');
+        expect(bytesToUtf8(Uint8Array.from([72, 255, 73]))).toBe('H\uFFFDI');
+        expect(bytesToUtf8(Uint8Array.from([104, 105]))).toBe('hi');
+    });
+
+    it('keeps a utf-8 byte order mark in the output', () => {
+        expect(bytesToUtf8(Uint8Array.from([0xef, 0xbb, 0xbf, 0x7a]))).toBe('\uFEFFz');
     });
 });
 

@@ -1,4 +1,5 @@
 import { Decoder } from '../base/Decoder.js';
+import { decodeBase64Text } from '../utils/base64.js';
 
 export class Base64Decoder extends Decoder {
     readonly name = 'Base64';
@@ -26,12 +27,8 @@ export class Base64Decoder extends Decoder {
 
     decode(input: string): string | null {
         try {
-            const cleanInput = input.replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
-            const paddedInput = cleanInput.padEnd(
-                cleanInput.length + ((4 - (cleanInput.length % 4)) % 4),
-                '='
-            );
-            return Buffer.from(paddedInput, 'base64').toString('utf-8');
+            const cleanInput = input.replace(/\s+/g, '');
+            return decodeBase64Text(cleanInput);
         } catch {
             return null;
         }

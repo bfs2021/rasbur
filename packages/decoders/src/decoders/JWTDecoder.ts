@@ -1,4 +1,5 @@
 import { Decoder } from '../base/Decoder.js';
+import { decodeBase64Text } from '../utils/base64.js';
 
 export class JWTDecoder extends Decoder {
     readonly name = 'JWT';
@@ -15,8 +16,8 @@ export class JWTDecoder extends Decoder {
         if (!base64urlRegex.test(header) || !base64urlRegex.test(payload)) return 0;
 
         try {
-            const headerJson = Buffer.from(header, 'base64url').toString('utf-8');
-            const payloadJson = Buffer.from(payload, 'base64url').toString('utf-8');
+            const headerJson = decodeBase64Text(header);
+            const payloadJson = decodeBase64Text(payload);
 
             const headerObj = JSON.parse(headerJson);
             const payloadObj = JSON.parse(payloadJson);
@@ -34,8 +35,8 @@ export class JWTDecoder extends Decoder {
             if (parts.length !== 3) return null;
             const header = parts[0]!;
             const payload = parts[1]!;
-            const headerObj = JSON.parse(Buffer.from(header, 'base64url').toString('utf-8'));
-            const payloadObj = JSON.parse(Buffer.from(payload, 'base64url').toString('utf-8'));
+            const headerObj = JSON.parse(decodeBase64Text(header));
+            const payloadObj = JSON.parse(decodeBase64Text(payload));
             return JSON.stringify({ header: headerObj, payload: payloadObj }, null, 2);
         } catch {
             return null;

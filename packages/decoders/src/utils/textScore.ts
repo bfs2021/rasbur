@@ -31,8 +31,8 @@ export const ENGLISH_FREQ: Record<string, number> = {
     z: 0.07,
 };
 
-// Control chars (except \t \n \r), DEL, and the U+FFFD replacement char that
-// Buffer.toString('utf-8') emits for invalid byte sequences.
+// Control chars (except \t \n \r), DEL, and the U+FFFD replacement char
+// emitted when invalid UTF-8 byte sequences are decoded as text.
 const BAD_CHAR_REGEX = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F�]/;
 
 // Letters covering ~75% of typical English text. Their share among the

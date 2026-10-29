@@ -1,0 +1,112 @@
+.cd-note {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-faint);
+}
+
+.cd-proof {
+    margin-top: 1.25rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr) minmax(0, 1fr);
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+}
+
+.cd-proof-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 1.75rem;
+    min-width: 0;
+}
+
+.cd-proof-cell + .cd-proof-cell {
+    border-left: 1px solid var(--color-rule);
+}
+
+.cd-proof-key {
+    font-size: 0.75rem;
+    color: var(--color-faint);
+}
+
+.cd-proof-in {
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+    word-break: break-all;
+}
+
+.cd-proof-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: cd-step;
+}
+
+.cd-proof-steps li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr auto;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 0.875rem;
+    counter-increment: cd-step;
+}
+
+.cd-proof-steps li + li {
+    border-top: 1px solid var(--color-rule);
+}
+
+.cd-proof-steps li::before {
+    content: counter(cd-step);
+    color: var(--color-faint);
+    font-size: 0.75rem;
+    padding-top: 0.1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.cd-proof-steps span:last-child {
+    color: var(--color-faint);
+}
+
+.cd-proof-cell--out {
+    background: var(--color-accent);
+    color: var(--color-paper);
+}
+
+.cd-proof-cell--out * {
+    color: inherit;
+}
+
+.cd-proof-out {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-paper);
+    word-break: break-word;
+}
+
+@media (max-width: 960px) {
+    .cd-proof {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cd-proof-cell + .cd-proof-cell {
+        border-left: none;
+        border-top: 1px solid var(--color-rule);
+    }
+
+    .cd-proof-cell--out {
+        border-top: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .cd-proof-cell {
+        padding: 1.25rem;
+    }
+}
+
+.cd-proof-cell--out .cd-proof-key {
+    color: var(--color-accent-wash);
+}

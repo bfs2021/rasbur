@@ -1,0 +1,645 @@
+.rb {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+}
+
+.rb > section {
+    border: 1px solid var(--color-rule-strong);
+    border-top: none;
+    background-color: var(--color-sand);
+}
+
+.rb > section:first-child {
+    border-top: 1px solid var(--color-rule);
+}
+
+.rb-hero {
+    display: flex;
+    flex-direction: column;
+}
+
+.rb-hero-copy {
+    padding: 4.5rem 3rem 3.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.rb-title {
+    margin: 0;
+    max-width: 17ch;
+    font-size: clamp(2.4rem, 6vw, 4.75rem);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+    color: var(--color-ink);
+}
+
+.rb-lede {
+    margin: 0;
+    max-width: 50ch;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+}
+
+.rb-install {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--color-rule-strong);
+    background: var(--color-paper-raised);
+}
+
+.rb-install-cmd {
+    flex: 1;
+    min-width: 0;
+    padding: 0.85rem 1rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+.rb-prompt {
+    color: var(--color-accent);
+    user-select: none;
+}
+
+.rb-accent {
+    color: var(--color-accent);
+}
+
+.tk-kw {
+    color: var(--color-accent);
+}
+
+.tk-str {
+    color: var(--color-code-str);
+}
+
+.tk-fn {
+    color: var(--color-code-fn);
+}
+
+.tk-key {
+    color: var(--color-ink);
+}
+
+.rb-copy {
+    flex-shrink: 0;
+    padding: 0 1.1rem;
+    border: none;
+    border-left: 1px solid var(--color-rule-strong);
+    background: var(--color-paper-raised);
+    color: var(--color-ink);
+    font-size: 0.8125rem;
+}
+
+.rb-copy:hover:not(:disabled) {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+}
+
+.rb-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.rb-install-group {
+    flex: 1 1 22rem;
+    max-width: 30rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rb-install-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+}
+
+.rb-install-note::before {
+    content: '';
+    flex-shrink: 0;
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--color-confidence-high);
+}
+
+.rb-primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.35rem;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color var(--motion-fast) ease;
+}
+
+.rb-primary:hover {
+    background: var(--color-ink);
+}
+
+.rb-cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.82em;
+    margin-left: 0.12em;
+    vertical-align: -0.02em;
+    background: var(--color-accent);
+}
+
+.rb-specimen {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr) minmax(0, 1fr);
+    border-top: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+}
+
+.rb-specimen-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 1.75rem;
+    min-width: 0;
+}
+
+.rb-specimen-cell + .rb-specimen-cell {
+    border-left: 1px solid var(--color-rule);
+}
+
+.rb-specimen-cell--out {
+    background: var(--color-accent);
+    color: var(--color-paper);
+}
+
+.rb-specimen-key {
+    font-size: 0.75rem;
+    color: var(--color-faint);
+}
+
+.rb-specimen-cell--out .rb-specimen-key {
+    color: var(--color-accent-wash);
+}
+
+.rb-specimen-in {
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+    word-break: break-all;
+}
+
+.rb-specimen-out {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.rb-specimen-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: layer;
+}
+
+.rb-specimen-steps li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr auto;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 0.875rem;
+    counter-increment: layer;
+}
+
+.rb-specimen-steps li + li {
+    border-top: 1px solid var(--color-rule);
+}
+
+.rb-specimen-steps li::before {
+    content: counter(layer);
+    color: var(--color-faint);
+    font-size: 0.75rem;
+    padding-top: 0.1rem;
+}
+
+.rb-hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    font-size: 0.875rem;
+}
+
+.rb-hero-links a,
+.rb-link {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-strong);
+    text-underline-offset: 0.3em;
+    transition:
+        color var(--motion-fast) ease,
+        text-decoration-color var(--motion-fast) ease;
+}
+
+.rb-hero-links a:hover,
+.rb-link:hover {
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
+}
+
+.rb-section {
+    padding: 3rem;
+}
+
+.rb-h2 {
+    margin: 0 0 1.75rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+}
+
+.rb-h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.rb-body {
+    margin: 0;
+    max-width: 60ch;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+}
+
+.rb-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border: 1px solid var(--color-rule);
+}
+
+.rb-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    padding: 1.75rem;
+    min-width: 0;
+    background: var(--color-paper-raised);
+}
+
+.rb-cell + .rb-cell {
+    border-left: 1px solid var(--color-rule);
+}
+
+.rb-code {
+    align-self: stretch;
+    margin: 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    white-space: pre;
+    word-break: normal;
+    overflow-x: auto;
+}
+
+.rb-tools {
+    align-self: stretch;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.rb-tool {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.8125rem;
+}
+
+.rb-tool:last-child {
+    border-bottom: 1px solid var(--color-rule);
+}
+
+.rb-tool dt {
+    align-self: start;
+    justify-self: start;
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--color-accent);
+    background: var(--color-accent-wash);
+    color: var(--color-accent-deep);
+    font-weight: 600;
+}
+
+.rb-tool dd {
+    margin: 0;
+    color: var(--color-muted);
+}
+
+.rb-link {
+    font-size: 0.875rem;
+}
+
+.rb-returns {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rb-returns-label {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-faint);
+}
+
+.rb-returns-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.rb-returns-table td {
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--color-rule);
+    vertical-align: top;
+    word-break: break-all;
+}
+
+.rb-returns-table tr:last-child td {
+    border-bottom: 1px solid var(--color-rule);
+}
+
+.rb-returns-table td:first-child {
+    width: 5.5rem;
+    font-weight: 600;
+    word-break: normal;
+}
+
+.rb-returns-table td:nth-child(2) {
+    width: 3.5rem;
+    color: var(--color-muted);
+}
+
+.rb-why {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.rb-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+}
+
+.rb-table {
+    width: 100%;
+    min-width: 46rem;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.rb-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--color-muted);
+    background: var(--color-paper);
+}
+
+.rb-table th,
+.rb-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-rule);
+    vertical-align: top;
+}
+
+.rb-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.rb-table code {
+    white-space: nowrap;
+}
+
+.rb-num {
+    font-variant-numeric: tabular-nums;
+}
+
+.rb-faint {
+    color: var(--color-faint);
+}
+
+.rb-kept {
+    color: var(--color-confidence-high);
+    font-weight: 600;
+}
+
+.rb-dropped {
+    color: var(--color-confidence-low);
+    font-weight: 600;
+}
+
+.rb-encodings {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    border-top: 1px solid var(--color-rule);
+    border-left: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+}
+
+.rb-encodings li {
+    padding: 0.85rem 1rem;
+    border-right: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
+    font-size: 0.875rem;
+}
+
+@media (max-width: 960px) {
+    .rb-hero,
+    .rb-split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rb-specimen {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rb-specimen-cell + .rb-specimen-cell {
+        border-left: none;
+        border-top: 1px solid var(--color-rule);
+    }
+
+    .rb-cell + .rb-cell {
+        border-left: none;
+        border-top: 1px solid var(--color-rule);
+    }
+}
+
+@media (max-width: 640px) {
+    .rb {
+        padding: 1.25rem 0.75rem 3rem;
+    }
+
+    .rb-hero-copy,
+    .rb-section {
+        padding: 2rem 1.25rem;
+    }
+
+    .rb-specimen-cell {
+        padding: 1.25rem;
+    }
+
+    .rb-tool {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.2rem;
+    }
+}
+
+.rb-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.75rem;
+    margin: -3rem -3rem 2.75rem;
+    padding: 0 3rem;
+    border-top: 2px solid var(--color-ink);
+    border-bottom: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+    font-size: 0.8125rem;
+}
+
+.rb-hero > .rb-bar {
+    margin: 0;
+}
+
+.rb-bar-path {
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.rb-bar-path::first-letter {
+    color: var(--color-accent);
+}
+
+.rb-bar-fact {
+    color: var(--color-muted);
+    text-align: right;
+}
+
+.rb > section:first-child {
+    border-top: none;
+}
+
+.rb > .rb-section--dark {
+    background: var(--color-ink);
+    border-color: var(--color-ink) !important;
+    color: var(--color-paper);
+}
+
+.rb-section--dark .rb-bar {
+    border-top-color: var(--color-accent);
+    border-bottom-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.rb-section--dark .rb-bar-path,
+.rb-section--dark .rb-h2 {
+    color: var(--color-paper);
+}
+
+.rb-section--dark .rb-bar-fact,
+.rb-section--dark .rb-body {
+    color: #a9afb7;
+}
+
+.rb-section--dark .rb-table-wrap {
+    border-color: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.rb-section--dark .rb-table th {
+    background: rgba(255, 255, 255, 0.06);
+    color: #9aa0a8;
+}
+
+.rb-section--dark .rb-table th,
+.rb-section--dark .rb-table td {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-paper);
+}
+
+.rb-section--dark .rb-table .rb-faint {
+    color: #7d838b;
+}
+
+.rb-section--dark .rb-table .rb-kept {
+    color: #5cc98a;
+}
+
+.rb-section--dark .rb-table .rb-dropped {
+    color: #f0874a;
+}
+
+@media (max-width: 640px) {
+    .rb-bar {
+        margin: -2rem -1.25rem 2rem;
+        padding: 0 1.25rem;
+    }
+}
+
+.rb-ct-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+}
+
+.rb-ct-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1.75rem;
+}
+
+.rb-ct-cell + .rb-ct-cell {
+    border-left: 1px solid var(--color-rule);
+}
+
+.rb-ct-action {
+    margin-top: auto;
+}
+
+@media (max-width: 900px) {
+    .rb-ct-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rb-ct-cell + .rb-ct-cell {
+        border-left: none;
+        border-top: 1px solid var(--color-rule);
+    }
+}
+
+.rb-status {
+    margin: -0.75rem 0 1.75rem;
+}

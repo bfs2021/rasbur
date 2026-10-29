@@ -36,8 +36,8 @@ export default function AboutPage() {
                     <h1 className="pg-title">Decode a string without naming the format.</h1>
                     <p className="pg-subtitle">
                         Rasbur is open-source software for identifying and unwrapping encoded
-                        strings. The web workspace is a reference implementation for the published
-                        decoder and MCP packages.
+                        strings. The packages are the product. This website and its workspace are a
+                        free demo that shows what they do, not a service to build on.
                     </p>
                 </div>
             </header>

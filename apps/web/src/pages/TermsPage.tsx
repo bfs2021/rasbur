@@ -5,8 +5,28 @@ export default function TermsPage() {
         <LegalPage
             title="Terms of use"
             lastUpdated="October 29, 2026"
-            intro="These terms cover the Rasbur reference workspace and optional API features. The separately published packages are governed by the MIT license."
+            intro="This website exists to show what Rasbur does. The hosted workspace and its API are a free demo, not a service to depend on. For real use, install the npm package or run the MCP server, which are covered by the MIT license rather than these terms."
             sections={[
+                {
+                    heading: 'A demo, not a service',
+                    body: (
+                        <p>
+                            The workspace runs on free-tier hosting, maintained by one person. It
+                            can be slow, rate limited, or unavailable without notice, and it may be
+                            shut down. There is no uptime commitment.
+                        </p>
+                    ),
+                },
+                {
+                    heading: 'Saved data',
+                    body: (
+                        <p>
+                            Saved history, share links and API keys are kept on a best-effort basis,
+                            with no backups, and may be lost. Keep your own copy of anything you
+                            need.
+                        </p>
+                    ),
+                },
                 {
                     heading: 'Software and results',
                     body: (

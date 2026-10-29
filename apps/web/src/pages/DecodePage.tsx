@@ -15,6 +15,7 @@ type LiveDecodeResponse =
     | { ok: false; error: string; issues?: Array<{ path: string; message: string }> };
 
 const LIVE_DECODE_DELAY_MS = 300;
+const SLOW_REQUEST_MS = 4000;
 
 const EXAMPLES = [
     {
@@ -202,6 +203,16 @@ export default function DecodePage() {
 
     const hasSteps = Boolean(result && result.steps.length > 0);
     const isLoading = requestState === 'loading';
+    const [isSlow, setIsSlow] = useState(false);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setIsSlow(false);
+            return;
+        }
+        const timer = window.setTimeout(() => setIsSlow(true), SLOW_REQUEST_MS);
+        return () => window.clearTimeout(timer);
+    }, [isLoading]);
 
     const statusText = isConnected
         ? 'Live. Decodes as you type.'
@@ -224,6 +235,20 @@ export default function DecodePage() {
                     {statusText}
                 </p>
             </header>
+
+            <p className="ws-notice">
+                This workspace is a free demo on free-tier hosting. The server sleeps when idle, so
+                the first decode can take up to a minute, and there is a daily limit. For anything
+                you rely on, or anything sensitive, use{' '}
+                <a
+                    href="https://www.npmjs.com/package/@rasbur/decoders"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    the npm package
+                </a>
+                , which runs on your machine.
+            </p>
 
             <div className="ws-grid">
                 <section className="ws-pane" aria-label="Input">
@@ -321,14 +346,23 @@ export default function DecodePage() {
                         <span className="ws-bar-title">Layers</span>
                         <span className="ws-bar-meta">
                             {isLoading
-                                ? 'Decoding'
+                                ? isSlow
+                                    ? 'Waking the server'
+                                    : 'Decoding'
                                 : hasSteps && result
                                   ? `${result.steps.length} ${result.steps.length === 1 ? 'layer' : 'layers'}`
                                   : ''}
                         </span>
                     </div>
 
-                    {requestState === 'error' ? (
+                    {isLoading && isSlow ? (
+                        <div className="ws-message">
+                            <p>
+                                The free server is waking up. The first decode after a quiet spell
+                                can take up to a minute, and the next ones are fast.
+                            </p>
+                        </div>
+                    ) : requestState === 'error' ? (
                         <div className="ws-message ws-message--error">
                             {errorKind === 'limit' ? (
                                 <p>

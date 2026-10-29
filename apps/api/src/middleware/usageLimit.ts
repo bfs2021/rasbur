@@ -135,7 +135,7 @@ export async function usageLimitMiddleware(
             if (user.tier !== 'pro' && newCount > limit) {
                 res.status(429).json({
                     error: 'Too Many Requests',
-                    message: `Daily decode limit of ${limit} requests exceeded for free tier. Please upgrade to Pro for unlimited decodes.`,
+                    message: `Daily limit of ${limit} decodes reached. It resets at 00:00 UTC.`,
                 });
                 return;
             }

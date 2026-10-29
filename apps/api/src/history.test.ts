@@ -47,6 +47,7 @@ vi.mock('./models/user.js', () => ({
                     tier: 'free',
                     dailyDecodeCount: 5,
                     lastDecodeReset: new Date(),
+                    save: vi.fn(async () => {}),
                 };
             }
             return null;

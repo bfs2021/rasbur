@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateKeyPairSync } from 'node:crypto';
 import { importPKCS8, SignJWT } from 'jose';
 import { app } from './app.js';
@@ -7,6 +7,11 @@ import { env } from './config/env.js';
 
 const redisMockState = vi.hoisted(() => ({
     counters: new Map<string, number>(),
+}));
+
+const userMockState = vi.hoisted(() => ({
+    currentUser: null as any,
+    save: vi.fn(async () => {}),
 }));
 
 vi.mock('./cache/redis.js', () => ({
@@ -31,16 +36,7 @@ vi.mock('./models/user.js', () => ({
     User: {
         findById: vi.fn(async (id: string) => {
             if (id === 'test-user-1') {
-                return {
-                    id: 'test-user-1',
-                    name: 'Test User',
-                    email: 'test@example.com',
-                    avatar: 'avatar-url',
-                    tier: 'free',
-                    dailyDecodeCount: 5,
-                    lastDecodeReset: new Date(),
-                    save: vi.fn(async () => {}),
-                };
+                return userMockState.currentUser;
             }
             return null;
         }),
@@ -67,6 +63,20 @@ async function createToken(
         .sign(privateKey);
 }
 
+function createMockUser(overrides: Record<string, unknown> = {}) {
+    return {
+        id: 'test-user-1',
+        name: 'Test User',
+        email: 'test@example.com',
+        avatar: 'avatar-url',
+        tier: 'free',
+        dailyDecodeCount: 5,
+        lastDecodeReset: new Date(),
+        save: userMockState.save,
+        ...overrides,
+    };
+}
+
 beforeAll(async () => {
     const keyPair = generateKeyPairSync('rsa', {
         modulusLength: 2048,
@@ -88,6 +98,12 @@ beforeAll(async () => {
 describe('API app', () => {
     beforeEach(() => {
         redisMockState.counters.clear();
+        userMockState.save.mockClear();
+        userMockState.currentUser = createMockUser();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     it('returns health status from GET /health', async () => {
@@ -137,6 +153,124 @@ describe('API app', () => {
         expect(response.body.steps[0]).toHaveProperty('input');
         expect(response.body.steps[0]).toHaveProperty('output');
         expect(response.body.steps[0]).toHaveProperty('explanation');
+    });
+
+    it('increments authenticated daily decode count and saves the user', async () => {
+        const now = new Date('2026-01-15T12:00:00.000Z');
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(now);
+        userMockState.currentUser = createMockUser({
+            dailyDecodeCount: 5,
+            lastDecodeReset: now,
+        });
+
+        const token = await createToken();
+        const response = await request(app)
+            .post('/api/decode')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                input: 'SGVsbG8=',
+            });
+
+        expect(response.status).toBe(200);
+        expect(userMockState.currentUser.dailyDecodeCount).toBe(6);
+        expect(userMockState.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('sets authenticated rate limit headers from the stored daily count', async () => {
+        const now = new Date('2026-01-15T12:00:00.000Z');
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(now);
+        userMockState.currentUser = createMockUser({
+            dailyDecodeCount: 199,
+            lastDecodeReset: now,
+        });
+
+        const token = await createToken();
+        const response = await request(app)
+            .post('/api/decode')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                input: 'SGVsbG8=',
+            });
+
+        expect(response.status).toBe(200);
+        expect(response.headers['x-ratelimit-limit']).toBe('200');
+        expect(response.headers['x-ratelimit-remaining']).toBe('0');
+    });
+
+    it('returns 429 with the free daily limit message when authenticated limit is exceeded', async () => {
+        const now = new Date('2026-01-15T12:00:00.000Z');
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(now);
+        userMockState.currentUser = createMockUser({
+            dailyDecodeCount: 200,
+            lastDecodeReset: now,
+        });
+
+        const token = await createToken();
+        const response = await request(app)
+            .post('/api/decode')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                input: 'SGVsbG8=',
+            });
+
+        expect(response.status).toBe(429);
+        expect(response.body.message).toBe(
+            'Daily limit of 200 decodes reached. It resets at 00:00 UTC.'
+        );
+        expect(response.headers['x-ratelimit-limit']).toBe('200');
+        expect(response.headers['x-ratelimit-remaining']).toBe('0');
+        expect(userMockState.save).not.toHaveBeenCalled();
+    });
+
+    it('resets authenticated daily count when last reset was on a previous UTC day', async () => {
+        const now = new Date('2026-01-15T00:30:00.000Z');
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(now);
+        userMockState.currentUser = createMockUser({
+            dailyDecodeCount: 199,
+            lastDecodeReset: new Date('2026-01-14T23:59:59.000Z'),
+        });
+
+        const token = await createToken();
+        const response = await request(app)
+            .post('/api/decode')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                input: 'SGVsbG8=',
+            });
+
+        expect(response.status).toBe(200);
+        expect(userMockState.currentUser.dailyDecodeCount).toBe(1);
+        expect(userMockState.currentUser.lastDecodeReset.getTime()).toBe(now.getTime());
+        expect(response.headers['x-ratelimit-remaining']).toBe('199');
+        expect(userMockState.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('counts each batch input toward the authenticated daily limit', async () => {
+        const now = new Date('2026-01-15T12:00:00.000Z');
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(now);
+        userMockState.currentUser = createMockUser({
+            dailyDecodeCount: 5,
+            lastDecodeReset: now,
+        });
+
+        const token = await createToken();
+        const response = await request(app)
+            .post('/api/decode/batch')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                inputs: ['SGVsbG8=', '48656c6c6f', '01001000'],
+            });
+
+        expect(response.status).toBe(200);
+        expect(userMockState.currentUser.dailyDecodeCount).toBe(8);
+        expect(response.headers['x-ratelimit-limit']).toBe('200');
+        expect(response.headers['x-ratelimit-remaining']).toBe('192');
+        expect(userMockState.save).toHaveBeenCalledTimes(1);
     });
 
     it('returns validation error for invalid POST /api/decode body', async () => {

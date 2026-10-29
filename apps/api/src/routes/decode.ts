@@ -181,6 +181,7 @@ decodeRouter.post(
     authenticate,
     apiKeyRateLimit,
     requirePermission('decode'),
+    usageLimitMiddleware,
     validate({ body: batchDecodeRequestSchema }),
     (req, res) => {
         registerDecoders();

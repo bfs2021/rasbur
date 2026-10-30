@@ -43,7 +43,6 @@ export async function verifySocketUser(socket: Socket): Promise<SocketUser | nul
     return {
         id: payload.sub,
         email: typeof payload.email === 'string' ? payload.email : undefined,
-        tier: typeof payload.tier === 'string' ? payload.tier : undefined,
     };
 }
 
@@ -58,7 +57,7 @@ export function attachSocketAuth(io: SocketIOServer): void {
                 // scoping still apply. Real user ids are Mongo ObjectIds, so the
                 // `anon:` prefix can never collide with a signed-in user.
                 const ip = socket.handshake.address || 'unknown';
-                socket.data.user = { id: `anon:${ip}`, tier: 'anon' };
+                socket.data.user = { id: `anon:${ip}` };
             }
             next();
         } catch (error) {

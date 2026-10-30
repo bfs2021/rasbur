@@ -9,14 +9,9 @@ const JWT_ALG = 'RS256';
 let privateKey: any;
 let publicKeyPem: string;
 
-async function createToken(
-    userId = 'test-user-1',
-    email = 'test@example.com',
-    tier = 'free'
-): Promise<string> {
+async function createToken(userId = 'test-user-1', email = 'test@example.com'): Promise<string> {
     return new SignJWT({
         email,
-        tier,
     })
         .setProtectedHeader({ alg: JWT_ALG })
         .setSubject(userId)
@@ -56,7 +51,6 @@ vi.mock('./models/user.js', () => ({
                     name: 'Test User',
                     email: 'test@example.com',
                     avatar: 'avatar-url',
-                    tier: 'free',
                     dailyDecodeCount: 5,
                     lastDecodeReset: new Date(),
                     save: vi.fn(async () => {}),

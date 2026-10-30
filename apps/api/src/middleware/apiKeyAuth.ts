@@ -23,7 +23,7 @@ export async function apiKeyAuthMiddleware(req: Request, res: Response, next: Ne
             return res.status(401).json({ error: 'Invalid API key' });
         }
 
-        req.user = { id: user.id, email: user.email, tier: user.tier };
+        req.user = { id: user.id, email: user.email };
         req.apiKey = {
             id: apiKey._id.toString(),
             permissions: apiKey.permissions as string[],

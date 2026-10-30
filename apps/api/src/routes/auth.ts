@@ -42,7 +42,6 @@ authRouter.get(
                   id: string;
                   name: string;
                   email: string;
-                  tier: string;
                   avatar?: string | null;
               }
             | undefined;
@@ -54,7 +53,6 @@ authRouter.get(
         const tokens = await issueAuthTokens({
             id: user.id,
             email: user.email,
-            tier: user.tier,
         });
         await storeRefreshSession(user.id, tokens.refreshJti, tokens.refreshExpiresAt);
 
@@ -83,7 +81,6 @@ authRouter.get(
                   id: string;
                   name: string;
                   email: string;
-                  tier: string;
                   avatar?: string | null;
               }
             | undefined;
@@ -95,7 +92,6 @@ authRouter.get(
         const tokens = await issueAuthTokens({
             id: user.id,
             email: user.email,
-            tier: user.tier,
         });
         await storeRefreshSession(user.id, tokens.refreshJti, tokens.refreshExpiresAt);
 
@@ -115,14 +111,12 @@ authRouter.post('/dev-login', async (req: Request, res: Response) => {
             email: 'dev@example.com',
             oauthProvider: 'google',
             oauthId: 'dev-oauth-id',
-            tier: 'free',
         });
     }
 
     const tokens = await issueAuthTokens({
         id: user.id,
         email: user.email,
-        tier: user.tier,
     });
     await storeRefreshSession(user.id, tokens.refreshJti, tokens.refreshExpiresAt);
 
@@ -132,7 +126,6 @@ authRouter.post('/dev-login', async (req: Request, res: Response) => {
             id: user.id,
             name: user.name,
             email: user.email,
-            tier: user.tier,
             avatar: user.avatar,
         },
         ...tokens,

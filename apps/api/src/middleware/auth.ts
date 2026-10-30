@@ -22,7 +22,6 @@ export async function jwtAuthMiddleware(req: Request, res: Response, next: NextF
         req.user = {
             id: payload.sub,
             email: payload.email,
-            tier: payload.tier,
         };
         req.authType = 'jwt';
         next();

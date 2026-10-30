@@ -10,7 +10,6 @@ type RefreshPayload = {
     sub: string;
     jti?: string;
     email?: string;
-    tier?: string;
 };
 export async function storeRefreshSession(userId: string, jti: string, expiresAt: Date) {
     const ttlSeconds = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / 1000));
@@ -43,7 +42,6 @@ export async function rotateRefreshToken(refreshToken: string) {
     const user = {
         id: typed.sub,
         email: typed.email ?? '',
-        tier: typed.tier ?? 'free',
     };
 
     // Generating new tokens
@@ -65,5 +63,4 @@ export async function logoutUser(refreshToken: string) {
 
     const key = `refresh-session:${typed.sub}`;
     await redis.del(key);
-
 }

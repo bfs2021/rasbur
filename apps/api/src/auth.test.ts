@@ -9,14 +9,9 @@ const JWT_ALG = 'RS256';
 let privateKey: any;
 let publicKeyPem: string;
 
-async function createToken(
-    userId = 'test-user-1',
-    email = 'test@example.com',
-    tier = 'free'
-): Promise<string> {
+async function createToken(userId = 'test-user-1', email = 'test@example.com'): Promise<string> {
     return new SignJWT({
         email,
-        tier,
     })
         .setProtectedHeader({ alg: JWT_ALG })
         .setSubject(userId)
@@ -44,7 +39,6 @@ vi.mock('./models/user.js', () => ({
                     name: 'Test User',
                     email: 'test@example.com',
                     avatar: 'avatar-url',
-                    tier: 'free',
                     oauthProvider: 'google',
                     dailyDecodeCount: 5,
                     lastDecodeReset: new Date(),
@@ -59,7 +53,6 @@ vi.mock('./models/user.js', () => ({
                     name: 'Developer User',
                     email: 'dev@example.com',
                     avatar: null,
-                    tier: 'free',
                     oauthProvider: 'google',
                     oauthId: 'dev-oauth-id',
                 };
@@ -131,7 +124,7 @@ describe('Authentication Integration Tests', () => {
         });
 
         it('allows access and returns profile for a valid token', async () => {
-            const token = await createToken('test-user-1', 'test@example.com', 'free');
+            const token = await createToken('test-user-1', 'test@example.com');
             const response = await request(app)
                 .get('/api/me')
                 .set('Authorization', `Bearer ${token}`);
@@ -143,7 +136,6 @@ describe('Authentication Integration Tests', () => {
             expect(response.body.user.name).toBe('Test User');
             expect(response.body.user.email).toBe('test@example.com');
             expect(response.body.user.avatar).toBe('avatar-url');
-            expect(response.body.user.tier).toBe('free');
             expect(response.body.user.oauthProvider).toBe('google');
             expect(response.body.user.dailyDecodeCount).toBe(5);
             expect(response.body.user.lastDecodeReset).toBeDefined();

@@ -1,9 +1,8 @@
-import { Socket } from "socket.io";
+import { Socket } from 'socket.io';
 
 export type SocketUser = {
     id: string;
     email?: string;
-    tier?: string;
 };
 
 // Extending Default Socket Type

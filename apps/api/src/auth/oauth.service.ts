@@ -27,7 +27,7 @@ async function resolveOAuthUser(provider: OAuthProvider, profile: OAuthProfile) 
         });
     }
 
-    // Create a user 
+    // Create a user
     if (!user) {
         user = await User.create({
             name: profile.displayName?.trim() || email || 'Unknown user',
@@ -35,7 +35,6 @@ async function resolveOAuthUser(provider: OAuthProvider, profile: OAuthProfile) 
             avatar,
             oauthProvider: provider,
             oauthId: profile.id,
-            tier: 'free',
         });
     }
 

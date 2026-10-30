@@ -15,7 +15,6 @@ export const userSchema = new Schema(
         oauthProvider: { type: String, required: true },
         oauthId: { type: String, required: true, index: true },
         isActive: { type: Boolean, default: true },
-        tier: { type: String, enum: ['free', 'pro'], default: 'free' },
         roles: { type: [String], default: [] },
         dailyDecodeCount: { type: Number, default: 0 },
         lastDecodeReset: { type: Date, default: () => new Date() },

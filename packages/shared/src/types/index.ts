@@ -53,7 +53,6 @@ export interface User {
     email: string;
     name: string;
     avatar?: string;
-    tier: 'free' | 'pro';
     createdAt: Date;
     oauthProvider?: string;
     dailyDecodeCount: number;

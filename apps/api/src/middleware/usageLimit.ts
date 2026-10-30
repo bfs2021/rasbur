@@ -20,7 +20,6 @@ async function tryAuthenticate(req: Request) {
         req.user = {
             id: payload.sub,
             email: payload.email,
-            tier: payload.tier,
         };
 
         return true;
@@ -107,7 +106,7 @@ export async function usageLimitMiddleware(
                 res.status(404).json({ error: 'User not found' });
                 return;
             }
-            const limit = user.tier === 'pro' ? Infinity : 200;
+            const limit = 200;
 
             // Lazy Reset Logic
             const lastReset = user.lastDecodeReset
@@ -121,18 +120,12 @@ export async function usageLimitMiddleware(
             const currentCount = needsReset ? 0 : user.dailyDecodeCount || 0;
             const newCount = currentCount + cost;
 
-            const remaining = user.tier === 'pro' ? 999999 : Math.max(0, limit - newCount);
-            res.setHeader(
-                'X-RateLimit-Limit',
-                user.tier === 'pro' ? 'unlimited' : limit.toString()
-            );
-            res.setHeader(
-                'X-RateLimit-Remaining',
-                user.tier === 'pro' ? 'unlimited' : remaining.toString()
-            );
+            const remaining = Math.max(0, limit - newCount);
+            res.setHeader('X-RateLimit-Limit', limit.toString());
+            res.setHeader('X-RateLimit-Remaining', remaining.toString());
             res.setHeader('X-RateLimit-Reset', ttl.toString());
 
-            if (user.tier !== 'pro' && newCount > limit) {
+            if (newCount > limit) {
                 res.status(429).json({
                     error: 'Too Many Requests',
                     message: `Daily limit of ${limit} decodes reached. It resets at 00:00 UTC.`,

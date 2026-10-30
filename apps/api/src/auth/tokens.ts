@@ -13,14 +13,12 @@ const privateKey = await importPKCS8(env.JWT_PRIVATE_KEY.replace(/\\n/g, '\n'), 
 type TokenUser = {
     id: string;
     email: string;
-    tier: string;
 };
 
 // Signing tokens
 async function signAccessToken(user: TokenUser, expiresIn: string) {
     return new SignJWT({
         email: user.email,
-        tier: user.tier,
         tokenType: 'access',
     })
         .setProtectedHeader({ alg: JWT_ALG })
@@ -33,7 +31,6 @@ async function signAccessToken(user: TokenUser, expiresIn: string) {
 async function signRefreshToken(user: TokenUser, expiresIn: string, refreshTokenId: string) {
     return new SignJWT({
         email: user.email,
-        tier: user.tier,
         tokenType: 'refresh',
     })
         .setJti(refreshTokenId)

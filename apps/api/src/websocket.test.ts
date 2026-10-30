@@ -61,7 +61,6 @@ const activeSockets = new Set<Socket>();
 async function createToken(userId = 'test-user-1'): Promise<string> {
     return new SignJWT({
         email: 'test@example.com',
-        tier: 'free',
     })
         .setProtectedHeader({ alg: JWT_ALG })
         .setSubject(userId)

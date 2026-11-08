@@ -141,6 +141,15 @@ describe('DecodePipeline', () => {
         expect(result.finalOutput).toContain('MD5');
     });
 
+    it('names a 16-character hex string as a 64-bit hash, not CRC16', () => {
+        const result = decodePipeline.decode('deadbeefcafebabe');
+        expect(result.steps[0]!.decoderName).toBe('Hash');
+        // 16 hex characters are 64 bits; CRC16 is only 4 hex characters.
+        expect(result.finalOutput).toContain('CRC-64');
+        expect(result.finalOutput).toContain('Bit Length: 64');
+        expect(result.finalOutput).not.toContain('CRC16');
+    });
+
     it('returns the original input when nothing decodes', () => {
         const result = decodePipeline.decode('');
         expect(result.steps).toHaveLength(0);

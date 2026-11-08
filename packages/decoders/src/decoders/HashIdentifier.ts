@@ -2,7 +2,7 @@ import { Decoder } from '../base/Decoder.js';
 
 const HASH_TYPES: Record<number, string> = {
     8: 'CRC32',
-    16: 'CRC16',
+    16: 'CRC-64 / half MD5',
     32: 'MD5',
     40: 'SHA-1 / RIPEMD-160',
     56: 'SHA-224 / SHA-512/224',
@@ -57,6 +57,6 @@ export class HashIdentifier extends Decoder {
     }
 
     explain(): string {
-        return 'Identified a cryptographic hash by length: CRC32 (8), MD5 (32), SHA-1 (40), SHA-224 (56), SHA-256 (64), SHA-384 (96), SHA-512 (128 hex chars).';
+        return 'Identified a hash by length: CRC32 (8), CRC-64 / half MD5 (16), MD5 (32), SHA-1 (40), SHA-224 (56), SHA-256 (64), SHA-384 (96), SHA-512 (128 hex chars).';
     }
 }
